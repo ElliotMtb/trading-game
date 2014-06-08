@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+  	<div id="container" width="600" height="600"></div>
+    <canvas id="myCanvas" width="578" height="200"></canvas>
+    <script src="kinetic-v4.5.5.min.js"></script>
+    <script>
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+
+      context.beginPath();
+      context.arc(288, 75, 70, 0, Math.PI, false);
+      context.closePath();
+      context.lineWidth = 5;
+      context.fillStyle = 'red';
+      context.fill();
+      context.strokeStyle = '#550000';
+      context.stroke();
+
+
+    </script>
+
+     <script defer="defer">
+
+	function getXYatArcEnd(c1,c2,radius,angle){
+		return [c1+Math.cos(angle)*radius,c2+Math.sin(angle)*radius];
+	}
+
+  function newGuid(){
+      var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+           return v.toString(16);
+      });     
+      return guid;
+  }
+
+      var stage = new Kinetic.Stage({
+        container: 'container',
+        width: 1200,
+        height: 1200
+      });
+
+      var hexes = {};
+
+      var hexRadius = 100;
+      var radiusToFirstRing = hexRadius*Math.sqrt(3);
+
+      var layer = new Kinetic.Layer();
+
+      var ring1StartX = 600; //+ radiusToFirstRing;
+      var ring1StartY = 600;
+
+      var ring1EndX = ring1StartX;
+      var ring1EndY = ring1StartY;
+
+      for(i=1; i <=6; i++)
+      {
+
+      	ring1EndX = getXYatArcEnd(ring1StartX, ring1StartY, radiusToFirstRing, i*2*Math.PI/6)[0];
+      	ring1EndY = getXYatArcEnd(ring1StartX, ring1StartY, radiusToFirstRing, i*2*Math.PI/6)[1];
+
+      	console.log("Ring1 Start (x,y): " + ring1StartX + "," + ring1StartY);
+      	console.log("Ring1 hex " + i + " end (x,y): " + ring1EndX + "," + ring1EndY);
+
+        var guid = newGuid();
+
+      	hexes[guid] = new Kinetic.RegularPolygon({
+        x: ring1EndX,
+        y: ring1EndY,
+        sides: 6,
+        radius: hexRadius,
+        fill: '#e43521',
+        stroke: 'black',
+        strokeWidth: 1,
+        id: guid
+      	});
+
+        hexes[guid].on('click', function(){
+          hexes[guid].setStroke("blue");
+          hexes[guid].setStrokeWidth("3");
+          hexes[guid].draw();
+
+        });
+
+		    layer.add(hexes[guid]);
+
+      }
+
+      for(i=1; i <=12; i++)
+      {
+      	if (i % 2 == 1){
+      		radiusToSecondRing = 3 * hexRadius;
+      	}
+      	else
+      	{
+      		radiusToSecondRing = 2 * radiusToFirstRing;	
+      	}
+	      	ring1EndX = getXYatArcEnd(ring1StartX, ring1StartY, radiusToSecondRing, i*2*Math.PI/12)[0];
+	      	ring1EndY = getXYatArcEnd(ring1StartX, ring1StartY, radiusToSecondRing, i*2*Math.PI/12)[1];
+
+	      	console.log("Ring1 Start (x,y): " + ring1StartX + "," + ring1StartY);
+	      	console.log("Ring1 hex " + i + " end (x,y): " + ring1EndX + "," + ring1EndY);
+
+	      	var polyRing1 = new Kinetic.RegularPolygon({
+	        x: ring1EndX,
+	        y: ring1EndY,
+	        sides: 6,
+	        radius: hexRadius,
+	        fill: 'cyan',
+	        stroke: 'black',
+	        strokeWidth: 1
+      		});
+
+		layer.add(polyRing1);
+      }
+
+      var twohexes = {};
+
+      var rockImage = new Image();
+      rockImage.onload = function(){
+        console.log("image loaded...");
+        layer.draw();
+      };
+      rockImage.src = "./rock.jpg";
+
+      twohexes[0] = new Kinetic.RegularPolygon({
+        x: 600,
+        y: 600,
+        sides: 6,
+        radius: hexRadius,
+        //fill: 'green',
+        fillPatternImage: rockImage,
+        fillPatternOffset: [-125, 100],
+        stroke: 'black',
+        strokeWidth: 1
+      });
+
+      twohexes[1] = new Kinetic.RegularPolygon({
+        x: 300,
+        y: 300,
+        sides: 6,
+        radius: hexRadius,
+        fill: 'green',
+        stroke: 'black',
+        strokeWidth: 1
+      });
+
+      twohexes[0].on('click', function(e){
+      	twohexes[0].setStroke("blue");
+      	twohexes[0].setStrokeWidth("3");
+      	twohexes[0].draw();
+      });
+
+      twohexes[1].on('click', function(e){
+        twohexes[1].setStroke("blue");
+        twohexes[1].setStrokeWidth("3");
+        twohexes[1].draw();
+      });
+      
+      // add the shape to the layer
+      layer.add(twohexes[0]);
+      layer.add(twohexes[1]);
+
+      // add the layer to the stage
+      stage.add(layer);
+
+      var shapes = {};
+
+      for (var n = 0; n < layer.getChildren().length; n++){
+
+        shapes[n] = layer.getChildren()[n];
+        shapes[n].on('click', function(){
+          alert(this.getAttr('fill'));
+        });
+      }
+
+    </script>
+  </body>
+</html>

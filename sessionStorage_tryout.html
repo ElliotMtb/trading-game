@@ -1,0 +1,28 @@
+<html>
+	<script>
+	if (window.sessionStorage) {
+		alert('This browser supports sesssionStorage');
+	}
+	else {
+	alert('This browser does NOT support sessiontStorage');
+	}
+
+	//localStorage
+	if (window.localStorage) {
+		alert('This browser supports localStorage');
+	}
+	else {
+		alert('This browser does NOT support localStorage');
+	}
+
+	sessionStorage.setItem('myFirstKey', 'myFirstValue');
+
+	alert(sessionStorage.getItem('myFirstKey'));
+	</script>
+
+	<body>
+		<div>
+			<p>Testing out sessionStorage</p>
+		</div>
+	</body>	
+</html>

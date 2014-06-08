@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<!-- saved from url=(0097)http://adrianmejia.com/blog/2012/09/13/backbone-js-for-absolute-beginners-getting-started-part-2/ -->
+<html class="js video maskImage placeholder" lang="en"><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Backbone.js for absolute beginners - getting started (part 2: Models, Collections and Views) - Adrian Mejia's [code]Blog</title>
+  <meta name="author" content="Adrian Mejia">
+
+  
+  <meta name="description" content="The part 1 of this tutorial is here 2. Todo App in Backbone (Models, Collections, View and Events) After completing this example app, you will have …">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1">
+
+  
+  <link rel="canonical" href="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog.htm">
+  <link href="http://adrianmejia.com/favicon.png" rel="icon">
+  <link href="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/jXHR.js"></script><script type="text/javascript" async="" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/plusone.js" gapi_processed="true"></script><script id="facebook-jssdk" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/all.js"></script><script type="text/javascript" async="" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/ga.js"></script><script src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/modernizr-2.0.js"></script><style type="text/css"></style>
+  <script src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/ender.js"></script>
+  <script src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/octopress.js" type="text/javascript"></script>
+  <link href="http://adrianmejia.com/atom.xml" rel="alternate" title="Adrian Mejia&#39;s [code]Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/css" rel="stylesheet" type="text/css">
+<link href="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/css(1)" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-24183929-4']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+<script type="text/javascript" async="" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/embed.js"></script><script type="text/javascript" async="" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/widgets.js"></script><script type="text/javascript" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/amejiarosario.json" async=""></script><style type="text/css">.fb_hidden{position:absolute;top:-10000px;z-index:10001}
+.fb_invisible{display:none}
+.fb_reset{background:none;border:0;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}
+.fb_reset > div{overflow:hidden}
+.fb_link img{border:none}
+.fb_dialog{background:rgba(82, 82, 82, .7);position:absolute;top:-10000px;z-index:10001}
+.fb_dialog_advanced{padding:10px;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px}
+.fb_dialog_content{background:#fff;color:#333}
+.fb_dialog_close_icon{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif);cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px;top:8px\9;right:7px\9}
+.fb_dialog_mobile .fb_dialog_close_icon{top:5px;left:5px;right:auto}
+.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}
+.fb_dialog_close_icon:hover{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}
+.fb_dialog_close_icon:active{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent;_background-image:url(http://static.ak.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}
+.fb_dialog_loader{background-color:#f2f2f2;border:1px solid #606060;font-size:24px;padding:20px}
+.fb_dialog_top_left,
+.fb_dialog_top_right,
+.fb_dialog_bottom_left,
+.fb_dialog_bottom_right{height:10px;width:10px;overflow:hidden;position:absolute}
+.fb_dialog_top_left{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 0;left:-10px;top:-10px}
+.fb_dialog_top_right{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -10px;right:-10px;top:-10px}
+.fb_dialog_bottom_left{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -20px;bottom:-10px;left:-10px}
+.fb_dialog_bottom_right{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -30px;right:-10px;bottom:-10px}
+.fb_dialog_vert_left,
+.fb_dialog_vert_right,
+.fb_dialog_horiz_top,
+.fb_dialog_horiz_bottom{position:absolute;background:#525252;filter:alpha(opacity=70);opacity:.7}
+.fb_dialog_vert_left,
+.fb_dialog_vert_right{width:10px;height:100%}
+.fb_dialog_vert_left{margin-left:-10px}
+.fb_dialog_vert_right{right:0;margin-right:-10px}
+.fb_dialog_horiz_top,
+.fb_dialog_horiz_bottom{width:100%;height:10px}
+.fb_dialog_horiz_top{margin-top:-10px}
+.fb_dialog_horiz_bottom{bottom:0;margin-bottom:-10px}
+.fb_dialog_iframe{line-height:0}
+.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #3b5998;color:#fff;font-size:14px;font-weight:bold;margin:0}
+.fb_dialog_content .dialog_title > span{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/yd/r/Cou7n-nqK52.gif)
+no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}
+body.fb_hidden{-webkit-transform:none;height:100%;margin:0;left:-10000px;overflow:visible;position:absolute;top:-10000px;width:100%
+}
+.fb_dialog.fb_dialog_mobile.loading{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/ya/r/3rhSv5V8j3o.gif)
+white no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}
+.fb_dialog.fb_dialog_mobile.loading.centered{max-height:590px;min-height:590px;max-width:500px;min-width:500px}
+#fb-root #fb_dialog_ipad_overlay{background:rgba(0, 0, 0, .45);position:absolute;left:0;top:0;width:100%;min-height:100%;z-index:10000}
+#fb-root #fb_dialog_ipad_overlay.hidden{display:none}
+.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}
+.fb_dialog_content .dialog_header{-webkit-box-shadow:white 0 1px 1px -1px inset;background:-webkit-gradient(linear, 0 0, 0 100%, from(#738ABA), to(#2C4987));border-bottom:1px solid;border-color:#1d4088;color:#fff;font:14px Helvetica, sans-serif;font-weight:bold;text-overflow:ellipsis;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0;vertical-align:middle;white-space:nowrap}
+.fb_dialog_content .dialog_header table{-webkit-font-smoothing:subpixel-antialiased;height:43px;width:100%
+}
+.fb_dialog_content .dialog_header td.header_left{font-size:12px;padding-left:5px;vertical-align:middle;width:60px
+}
+.fb_dialog_content .dialog_header td.header_right{font-size:12px;padding-right:5px;vertical-align:middle;width:60px
+}
+.fb_dialog_content .touchable_button{background:-webkit-gradient(linear, 0 0, 0 100%, from(#4966A6),
+color-stop(0.5, #355492), to(#2A4887));border:1px solid #29447e;-webkit-background-clip:padding-box;-webkit-border-radius:3px;-webkit-box-shadow:rgba(0, 0, 0, .117188) 0 1px 1px inset,
+rgba(255, 255, 255, .167969) 0 1px 0;display:inline-block;margin-top:3px;max-width:85px;line-height:18px;padding:4px 12px;position:relative}
+.fb_dialog_content .dialog_header .touchable_button input{border:none;background:none;color:#fff;font:12px Helvetica, sans-serif;font-weight:bold;margin:2px -12px;padding:2px 6px 3px 6px;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}
+.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:16px;font-weight:bold;line-height:18px;text-align:center;vertical-align:middle}
+.fb_dialog_content .dialog_content{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #555;border-bottom:0;border-top:0;height:150px}
+.fb_dialog_content .dialog_footer{background:#f2f2f2;border:1px solid #555;border-top-color:#ccc;height:40px}
+#fb_dialog_loader_close{float:left}
+.fb_dialog.fb_dialog_mobile .fb_dialog_close_button{text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}
+.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}
+.fb_iframe_widget{display:inline-block;position:relative}
+.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}
+.fb_iframe_widget iframe{position:absolute}
+.fb_iframe_widget_lift{z-index:1}
+.fb_hide_iframes iframe{position:relative;left:-10000px}
+.fb_iframe_widget_loader{position:relative;display:inline-block}
+.fb_iframe_widget_fluid{display:inline}
+.fb_iframe_widget_fluid span{width:100%}
+.fb_iframe_widget_loader iframe{min-height:32px;z-index:2;zoom:1}
+.fb_iframe_widget_loader .FB_Loader{background:url(http://static.ak.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat;height:32px;width:32px;margin-left:-16px;position:absolute;left:50%;z-index:4}
+.fb_connect_bar_container div,
+.fb_connect_bar_container span,
+.fb_connect_bar_container a,
+.fb_connect_bar_container img,
+.fb_connect_bar_container strong{background:none;border-spacing:0;border:0;direction:ltr;font-style:normal;font-variant:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal;vertical-align:baseline}
+.fb_connect_bar_container{position:fixed;left:0 !important;right:0 !important;height:42px !important;padding:0 25px !important;margin:0 !important;vertical-align:middle !important;border-bottom:1px solid #333 !important;background:#3b5998 !important;z-index:99999999 !important;overflow:hidden !important}
+.fb_connect_bar_container_ie6{position:absolute;top:expression(document.compatMode=="CSS1Compat"? document.documentElement.scrollTop+"px":body.scrollTop+"px")}
+.fb_connect_bar{position:relative;margin:auto;height:100%;width:100%;padding:6px 0 0 0 !important;background:none;color:#fff !important;font-family:"lucida grande", tahoma, verdana, arial, sans-serif !important;font-size:13px !important;font-style:normal !important;font-variant:normal !important;font-weight:normal !important;letter-spacing:normal !important;line-height:1 !important;text-decoration:none !important;text-indent:0 !important;text-shadow:none !important;text-transform:none !important;white-space:normal !important;word-spacing:normal !important}
+.fb_connect_bar a:hover{color:#fff}
+.fb_connect_bar .fb_profile img{height:30px;width:30px;vertical-align:middle;margin:0 6px 5px 0}
+.fb_connect_bar div a,
+.fb_connect_bar span,
+.fb_connect_bar span a{color:#bac6da;font-size:11px;text-decoration:none}
+.fb_connect_bar .fb_buttons{float:right;margin-top:7px}
+.fb_edge_widget_with_comment{position:relative;*z-index:1000}
+.fb_edge_widget_with_comment span.fb_edge_comment_widget{position:absolute}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget{z-index:1}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget .FB_Loader{left:0;top:1px;margin-top:6px;margin-left:0;background-position:50% 50%;background-color:#fff;height:150px;width:394px;border:1px #666 solid;border-bottom:2px solid #283e6c;z-index:1}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget.dark .FB_Loader{background-color:#000;border-bottom:2px solid #ccc}
+.fb_edge_widget_with_comment span.fb_send_button_form_widget.siderender
+.FB_Loader{margin-top:0}
+.fbpluginrecommendationsbarleft,
+.fbpluginrecommendationsbarright{position:fixed !important;bottom:0;z-index:999}
+.fbpluginrecommendationsbarleft{left:10px}
+.fbpluginrecommendationsbarright{right:10px}</style><script src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/alfie.js" async="" charset="UTF-8"></script></head>
+
+<body data-twttr-rendered="true">
+  <header role="banner"><hgroup>
+  <h1><a href="http://adrianmejia.com/">Adrian Mejia's [code]Blog</a></h1>
+  
+    <h2>var life = { "work_hard","have_fun","make_history" };</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="http://adrianmejia.com/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:adrianmejia.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search">
+  </fieldset><fieldset class="mobile-nav"><select><option value="">Navigate…</option><option value="http://adrianmejia.com/">» Blog</option><option value="http://adrianmejia.com/blog/archives">» Archives</option><option value="http://adrianmejia.com/portfolio">» Portfolio</option><option value="http://adrianmejia.com/atom.xml">» RSS</option></select></fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="http://adrianmejia.com/">Blog</a></li>
+  <li><a href="http://adrianmejia.com/blog/archives">Archives</a></li>
+	<li><a href="http://adrianmejia.com/portfolio">Portfolio</a></li>
+	<!-- <li><a href="/about">about</a></li> -->
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Backbone.js for Absolute Beginners - Getting Started (Part 2: Models, Collections and Views)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-13T00:08:00-04:00" pubdate="" data-updated="true">Sep 13<span>th</span>, 2012</time>
+        
+         | <a href="http://adrianmejia.com/blog/2012/09/13/backbone-js-for-absolute-beginners-getting-started-part-2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The part 1 of this tutorial is <a href="http://adrianmejia.com/blog/2012/09/11/backbone-dot-js-for-absolute-beginners-getting-started/">here</a></p>
+
+<h2>2. Todo App in Backbone (Models, Collections, View and Events)</h2>
+
+<p>After completing this example app, you will have experience and basic understanding of all the modules of Backbone!</p>
+
+<p>(Revised: 2013-02-02)</p>
+
+<h3>2.1.- Todo app Boiler plate</h3>
+
+<p>Let’s start again with the initial <a href="https://raw.github.com/amejiarosario/Backbone-tutorial/9821e5b1fdc39d22720b1a1d89055cc531f994d7/backbone-tutorial.html">HTML file</a> used on 1.1. Now, instead of div#container let’s add the following HTML code:</p>
+
+<figure class="code"><figcaption><span>HTML Structure </span><a href="https://raw.github.com/amejiarosario/Backbone-tutorial/fe0efb0fd0c4c3c4cb5fd61e9917165082f9a562/backbone-tutorial.html">Full Code </a></figcaption> <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line">  <span class="nt">&lt;section</span> <span class="na">id=</span><span class="s">"todoapp"</span><span class="nt">&gt;</span>
+</span><span class="line">    <span class="nt">&lt;header</span> <span class="na">id=</span><span class="s">"header"</span><span class="nt">&gt;</span>
+</span><span class="line">      <span class="nt">&lt;h1&gt;</span>Todos<span class="nt">&lt;/h1&gt;</span>
+</span><span class="line">      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"new-todo"</span> <span class="na">placeholder=</span><span class="s">"What needs to be done?"</span><span class="nt">&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/header&gt;</span>
+</span><span class="line">    <span class="nt">&lt;section</span> <span class="na">id=</span><span class="s">"main"</span><span class="nt">&gt;</span>
+</span><span class="line">      <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">"todo-list"</span><span class="nt">&gt;&lt;/ul&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/section&gt;</span>
+</span><span class="line">  <span class="nt">&lt;/section&gt;</span>
+</span><span class="line">
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>We are going to implement a To-do list, which is basically un-ordered list (ul) of elements with checkboxes.</p>
+
+<h3>2.2.- Backbone.Model</h3>
+
+<p>Models are the heart of every application. It contains the interactive data and the logic surrounding it, such as data validation, getters and setters, default values, data initialization, conversions and so on.
+For our example, we are going to create a model called <code>Todo</code>, which will store a string of text (title) and whether the task has been completed or not.</p>
+
+<figure class="code"><figcaption><span>Todo Model </span><a href="https://raw.github.com/amejiarosario/Backbone-tutorial/fe0efb0fd0c4c3c4cb5fd61e9917165082f9a562/backbone-tutorial.html">Full Code </a></figcaption> <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line">    <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="p">{};</span> <span class="c1">// create namespace for our app</span>
+</span><span class="line">
+</span><span class="line">    <span class="nx">app</span><span class="p">.</span><span class="nx">Todo</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class="line">      <span class="nx">defaults</span><span class="o">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="nx">title</span><span class="o">:</span> <span class="s1">''</span><span class="p">,</span>
+</span><span class="line">        <span class="nx">completed</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class="line">      <span class="p">}</span>
+</span><span class="line">    <span class="p">});</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p>Notice, that for convention classes names are capitalize, while instance variables and objects are not. Another important aspect of models it’s that their properties are dynamic; they can be created on the fly and doesn’t have any specific type associated.</p>
+
+<p><strong>Test what you just coded!</strong></p>
+
+<p>After you completed the code snippet above you can open your browser console (chrome’s console: ctrl+shift+i -or- ⌘+alt+i) and try this out, to get familiar with the models:</p>
+
+<figure class="code"><figcaption><span>Practice in your Browser's console   </span></figcaption>
+ <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line"><span class="kd">var</span> <span class="nx">todo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">app</span><span class="p">.</span><span class="nx">Todo</span><span class="p">({</span><span class="nx">title</span><span class="o">:</span> <span class="s1">'Learn Backbone.js'</span><span class="p">,</span> <span class="nx">completed</span><span class="o">:</span> <span class="kc">false</span><span class="p">});</span> <span class="c1">// create object with the attributes specified.</span>
+</span><span class="line"><span class="nx">todo</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'title'</span><span class="p">);</span> <span class="c1">// "Learn Backbone.js" </span>
+</span><span class="line"><span class="nx">todo</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'completed'</span><span class="p">);</span> <span class="c1">// false</span>
+</span><span class="line"><span class="nx">todo</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'created_at'</span><span class="p">);</span> <span class="c1">// undefined</span>
+</span><span class="line"><span class="nx">todo</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'created_at'</span><span class="p">,</span> <span class="nb">Date</span><span class="p">());</span>
+</span><span class="line"><span class="nx">todo</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'created_at'</span><span class="p">);</span> <span class="c1">// "Wed Sep 12 2012 12:51:17 GMT-0400 (EDT)"</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<h3>2.3.- Backbone.Collection</h3>
+
+<p>As its name indicates, collections are ordered sets of models, where you can get and set models in the collection, listen for events when any element in the collection changes, and fetching for model’s data from the server.</p>
+
+<p>Collections allows to save data (in database, file, memory), and it requires a reference to it. Therefore, you need to specify the <code>url</code> parameter with a relative url, where the model’s resource would be located on the server. Otherwise, you will get errors like:</p>
+
+<p><code>A "url" property or function must be specified</code></p>
+
+<p>We are not going to use a backend server for simplicity (I will do a new post for that); instead we are going to use HTML5’s local storage for persistence through a Backbone’s plugin. So, we need to define the localStorage property instead of URL.</p>
+
+<figure class="code"><figcaption><span>Todo list Collection </span><a href="https://raw.github.com/amejiarosario/Backbone-tutorial/fe0efb0fd0c4c3c4cb5fd61e9917165082f9a562/backbone-tutorial.html">Full Code </a></figcaption> <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line">    <span class="nx">app</span><span class="p">.</span><span class="nx">TodoList</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class="line">      <span class="nx">model</span><span class="o">:</span> <span class="nx">app</span><span class="p">.</span><span class="nx">Todo</span><span class="p">,</span>
+</span><span class="line">      <span class="nx">localStorage</span><span class="o">:</span> <span class="k">new</span> <span class="nx">Store</span><span class="p">(</span><span class="s2">"backbone-todo"</span><span class="p">)</span>
+</span><span class="line">    <span class="p">});</span>
+</span><span class="line">
+</span><span class="line">    <span class="c1">// instance of the Collection</span>
+</span><span class="line">    <span class="nx">app</span><span class="p">.</span><span class="nx">todoList</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">app</span><span class="p">.</span><span class="nx">TodoList</span><span class="p">();</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<p><strong>Test what you just your coded!</strong></p>
+
+<p>(Google’s Chrome console shortcuts: ctrl+shift+i -or- ⌘+alt+i)</p>
+
+<figure class="code"><figcaption><span>Practice in your Browser's console   </span></figcaption>
+ <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line"><span class="kd">var</span> <span class="nx">todoList</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">app</span><span class="p">.</span><span class="nx">TodoList</span><span class="p">()</span>
+</span><span class="line"><span class="nx">todoList</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="nx">title</span><span class="o">:</span> <span class="s1">'Learn Backbone\'s Collection'</span><span class="p">});</span> <span class="c1">// notice: that `completed` will be set to false by default.</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">lmodel</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">app</span><span class="p">.</span><span class="nx">Todo</span><span class="p">({</span><span class="nx">title</span><span class="o">:</span> <span class="s1">'Learn Models'</span><span class="p">,</span> <span class="nx">completed</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+</span><span class="line"><span class="nx">todoList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">lmodel</span><span class="p">);</span> <span class="c1">// ["Learn Backbone's Collection", "Learn Models"]</span>
+</span><span class="line"><span class="nx">todoList</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="s1">'title'</span><span class="p">);</span> <span class="c1">// [false, true]</span>
+</span><span class="line"><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">todoList</span><span class="p">);</span> <span class="c1">// "[{"title":"Learn Backbone's Collection","completed":false,"id":"d9763e99-2267-75f5-62c3-9d7e40742aa6"},{"title":"Learn Models","completed":true}]"</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<h2>2.4.- Backbone.View</h2>
+
+<p>As mentioned in <a href="http://adrianmejia.com/blog/2012/09/11/backbone-dot-js-for-absolute-beginners-getting-started/#1.2">1.2</a>, Views doesn’t have the HTML markups for our application, but instead (It’s like the controller in MVC frameworks) process data and link it to templates and it finally render HTML based on events or data changes.</p>
+
+<h3>2.4.1.- Basic Properties</h3>
+
+<p>There are 4 basic properties in a view: el, initialize, render, and events.</p>
+
+<p>We have already seen the first 3 and will see later the fourth one. Do you remember the Hello World View from <a href="http://adrianmejia.com/blog/2012/09/11/backbone-dot-js-for-absolute-beginners-getting-started/#1.2">1.2</a>?</p>
+
+<figure class="code"><figcaption><span>Example of a Backbone.View  </span></figcaption>
+ <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line">    <span class="kd">var</span> <span class="nx">AppView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class="line">      <span class="c1">// el - stands for element. Every view has a element associate in with HTML </span>
+</span><span class="line">      <span class="c1">//      content will be rendered.</span>
+</span><span class="line">      <span class="nx">el</span><span class="o">:</span> <span class="s1">'#container'</span><span class="p">,</span>
+</span><span class="line">      <span class="c1">// It's the first function called when this view it's instantiated.</span>
+</span><span class="line">      <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class="line">        <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
+</span><span class="line">      <span class="p">},</span>
+</span><span class="line">      <span class="c1">// $el - it's a cached jQuery object (el), in which you can use jQuery functions </span>
+</span><span class="line">      <span class="c1">//       to push content. Like the Hello World in this case.</span>
+</span><span class="line">      <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class="line">        <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s2">"Hello World"</span><span class="p">);</span>
+</span><span class="line">      <span class="p">}</span>
+</span><span class="line">    <span class="p">});</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<h3>2.4.1.1.- <code>view.el</code></h3>
+
+<p>Every view needs to reference a DOM at all times. Therefore, the view will inject content into this element. This is the <code>el</code> property. <code>this.el</code> is created from view’s <code>el</code>,<code>tagName</code>, <code>className</code>, <code>id</code> or <code>attributes</code> properties. If none of these are specified, then this.el is an empty <code>div</code>. The <code>view.$el</code> it’s a cached jQuery object of the view’s element (view.el).</p>
+
+<h3>2.4.1.2.- Initialize/construtor</h3>
+
+<p>Here you have the option to pass parameters that will be attached to a model, collection or view.el.</p>
+
+<h3>2.4.1.3.- <code>render</code></h3>
+
+<p>In this function, you inject the markup into the elements. Not all views require having a render function, as you are going to see in the sample code, they can call other view’s render functions.</p>
+
+<h3>2.4.1.5.- delegated events</h3>
+
+<p>Events are written in the <code>{"&lt;EVENT_NAME&gt; &lt;ELEMENT_ID&gt;": "&lt;FUNCTION_CALLBACK&gt;"}</code> format.
+E.g. <code>events: {'keypress #new-todo': 'createTodoOnEnter'}</code></p>
+
+<h2>2.4.2.- Todo View</h2>
+
+<p>Now back to our To-do application: We need a view that renders each of the todo model objects into the page. The <code>item-template</code> and <code>app.TodoView</code> will render each todo item.</p>
+
+<figure class="code"><figcaption><span>item-template </span><a href="https://raw.github.com/amejiarosario/Backbone-tutorial/fe0efb0fd0c4c3c4cb5fd61e9917165082f9a562/backbone-tutorial.html">Full Code </a></figcaption> <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line">   <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/template"</span> <span class="na">id=</span><span class="s">"item-template"</span><span class="nt">&gt;</span>
+</span><span class="line">      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">"view"</span><span class="o">&gt;</span>
+</span><span class="line">        <span class="o">&lt;</span><span class="nx">input</span> <span class="kr">class</span><span class="o">=</span><span class="s2">"toggle"</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"checkbox"</span><span class="o">&gt;</span>
+</span><span class="line">        <span class="o">&lt;</span><span class="nx">label</span><span class="o">&gt;&lt;%-</span> <span class="nx">title</span> <span class="o">%&gt;&lt;</span><span class="err">/label&gt;</span>
+</span><span class="line">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+
+
+<figure class="code"><figcaption><span>Todo View </span><a href="https://raw.github.com/amejiarosario/Backbone-tutorial/fe0efb0fd0c4c3c4cb5fd61e9917165082f9a562/backbone-tutorial.html">Full Code </a></figcaption> <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line">    <span class="c1">// renders individual todo items list (li)</span>
+</span><span class="line">    <span class="nx">app</span><span class="p">.</span><span class="nx">TodoView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class="line">      <span class="nx">tagName</span><span class="o">:</span> <span class="s1">'li'</span><span class="p">,</span>
+</span><span class="line">      <span class="nx">template</span><span class="o">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">'#item-template'</span><span class="p">).</span><span class="nx">html</span><span class="p">()),</span>
+</span><span class="line">      <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class="line">        <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()));</span>
+</span><span class="line">        <span class="k">return</span> <span class="k">this</span><span class="p">;</span> <span class="c1">// enable chained calls</span>
+</span><span class="line">      <span class="p">}</span>
+</span><span class="line">    <span class="p">});</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<h2>2.4.3.- App View</h2>
+
+<p>Now, we need another view that take a collection and render each of the individual items. We are going to call it ‘AppView’. Take a look through this code and try to identify each of the elements (we have already describe them in the previous sections).</p>
+
+<figure class="code"><figcaption><span>Todo View </span><a href="https://raw.github.com/amejiarosario/Backbone-tutorial/fe0efb0fd0c4c3c4cb5fd61e9917165082f9a562/backbone-tutorial.html">Full Code </a></figcaption> <div class="highlight"><table><tbody><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+</pre></td><td class="code"><pre><code class="js"><span class="line">    <span class="c1">// renders the full list of todo items calling TodoView for each one.</span>
+</span><span class="line">    <span class="nx">app</span><span class="p">.</span><span class="nx">AppView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class="line">      <span class="nx">el</span><span class="o">:</span> <span class="s1">'#todoapp'</span><span class="p">,</span>
+</span><span class="line">      <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class="line">        <span class="k">this</span><span class="p">.</span><span class="nx">input</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">'#new-todo'</span><span class="p">);</span>
+</span><span class="line">        <span class="nx">app</span><span class="p">.</span><span class="nx">todoList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'add'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAll</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</span><span class="line">        <span class="nx">app</span><span class="p">.</span><span class="nx">todoList</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'reset'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAll</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</span><span class="line">        <span class="nx">app</span><span class="p">.</span><span class="nx">todoList</span><span class="p">.</span><span class="nx">fetch</span><span class="p">();</span> <span class="c1">// Loads list from local storage</span>
+</span><span class="line">      <span class="p">},</span>
+</span><span class="line">      <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="s1">'keypress #new-todo'</span><span class="o">:</span> <span class="s1">'createTodoOnEnter'</span>
+</span><span class="line">      <span class="p">},</span>
+</span><span class="line">      <span class="nx">createTodoOnEnter</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+</span><span class="line">        <span class="k">if</span> <span class="p">(</span> <span class="nx">e</span><span class="p">.</span><span class="nx">which</span> <span class="o">!==</span> <span class="mi">13</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">().</span><span class="nx">trim</span><span class="p">()</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">// ENTER_KEY = 13</span>
+</span><span class="line">          <span class="k">return</span><span class="p">;</span>
+</span><span class="line">        <span class="p">}</span>
+</span><span class="line">        <span class="nx">app</span><span class="p">.</span><span class="nx">todoList</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">newAttributes</span><span class="p">());</span>
+</span><span class="line">        <span class="k">this</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span> <span class="c1">// clean input box</span>
+</span><span class="line">      <span class="p">},</span>
+</span><span class="line">      <span class="nx">addOne</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">todo</span><span class="p">){</span>
+</span><span class="line">        <span class="kd">var</span> <span class="nx">view</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">app</span><span class="p">.</span><span class="nx">TodoView</span><span class="p">({</span><span class="nx">model</span><span class="o">:</span> <span class="nx">todo</span><span class="p">});</span>
+</span><span class="line">        <span class="nx">$</span><span class="p">(</span><span class="s1">'#todo-list'</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">view</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">);</span>
+</span><span class="line">      <span class="p">},</span>
+</span><span class="line">      <span class="nx">addAll</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class="line">        <span class="k">this</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">'#todo-list'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span> <span class="c1">// clean the todo list</span>
+</span><span class="line">        <span class="nx">app</span><span class="p">.</span><span class="nx">todoList</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">addOne</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</span><span class="line">      <span class="p">},</span>
+</span><span class="line">      <span class="nx">newAttributes</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class="line">        <span class="k">return</span> <span class="p">{</span>
+</span><span class="line">          <span class="nx">title</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">().</span><span class="nx">trim</span><span class="p">(),</span>
+</span><span class="line">          <span class="nx">completed</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class="line">        <span class="p">}</span>
+</span><span class="line">      <span class="p">}</span>
+</span><span class="line">    <span class="p">});</span>
+</span><span class="line">
+</span><span class="line">    <span class="c1">//--------------</span>
+</span><span class="line">    <span class="c1">// Initializers</span>
+</span><span class="line">    <span class="c1">//--------------   </span>
+</span><span class="line">
+</span><span class="line">    <span class="nx">app</span><span class="p">.</span><span class="nx">appView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">app</span><span class="p">.</span><span class="nx">AppView</span><span class="p">();</span>
+</span></code></pre></td></tr></tbody></table></div></figure>
+
+
+<h3>Continue with the <a href="http://adrianmejia.com/blog/2012/09/13/backbonejs-for-absolute-beginners-getting-started-part-3/">3rd part</a> and learn how to make CRUD for your models!</h3>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Adrian Mejia</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-13T00:08:00-04:00" pubdate="" data-updated="true">Sep 13<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class="category" href="http://adrianmejia.com/blog/categories/agile-frameworks/">agile frameworks</a>, <a class="category" href="http://adrianmejia.com/blog/categories/backbonejs/">backbonejs</a>, <a class="category" href="http://adrianmejia.com/blog/categories/javascript/">javascript</a>, <a class="category" href="http://adrianmejia.com/blog/categories/tutorials/">tutorials</a>, <a class="category" href="http://adrianmejia.com/blog/categories/web-development/">web development</a>, <a class="category" href="http://adrianmejia.com/blog/categories/web-frameworks/">web frameworks</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <iframe allowtransparency="true" frameborder="0" scrolling="no" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/tweet_button.1374787011(1).htm" class="twitter-share-button twitter-count-horizontal" title="Twitter Tweet Button" data-twttr-rendered="true" style="width: 110px; height: 20px;"></iframe>
+  
+  
+  <div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 90px; height: 20px; background-position: initial initial; background-repeat: initial initial;"><iframe frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 90px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1375195227216" name="I0_1375195227216" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/fastbutton.htm" allowtransparency="true" data-gapiattached="true" title="+1"></iframe></div>
+  
+  
+    <div class="fb-like fb_edge_widget_with_comment fb_iframe_widget" data-send="true" data-width="450" data-show-faces="false" fb-xfbml-state="rendered"><span style="height: 24px; width: 450px;"><iframe id="f8e3c0c28" name="f1b46db48" scrolling="no" title="Like this content on Facebook." class="fb_ltr" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/like.htm" style="border: none; overflow: hidden; height: 24px; width: 450px;"></iframe></span></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="http://adrianmejia.com/blog/2012/09/11/backbone-dot-js-for-absolute-beginners-getting-started/" title="Previous Post: Backbone.js for Absolute Beginners - Getting started (Part 1: Intro)">« Backbone.js for Absolute Beginners - Getting started (Part 1: Intro)</a>
+      
+      
+        <a class="basic-alignment right" href="http://adrianmejia.com/blog/2012/09/13/backbonejs-for-absolute-beginners-getting-started-part-3/" title="Next Post: Backbone.js for absolute beginners - getting started (part 3: CRUD)">Backbone.js for absolute beginners - getting started (part 3: CRUD) »</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><iframe id="dsq1" data-disqus-uid="1" allowtransparency="true" frameborder="0" role="complementary" width="100%" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/saved_resource.htm" style="width: 100%; border: none; overflow: hidden; height: 1844px;" scrolling="no" horizontalscrolling="no" verticalscrolling="no"></iframe></div>
+  </section>
+
+</div>
+
+<aside class="sidebar thirds">
+  
+    <section class="first odd">
+  <h1>About Me</h1>
+  {<br>
+"name": "<a href="http://twitter.com/amejiarosario" target="_blank">Adrian Mejia</a>",<br>
+"location": "<a href="https://maps.google.com/?q=boston+ma" target="_blank">Boston, MA</a>",<br>
+"title": "<a href="http://www.linkedin.com/in/adrianmejia" target="_blank">Software Engineer</a>",<br>
+"technologies": [
+"<a href="http://rubyonrails.org/" target="_blank">Ruby on Rails</a>",
+"<a href="http://www.ruby-lang.org/" target="_blank">Ruby</a>",
+"<a href="http://adrianmejia.com/blog/categories/javascript/" target="_blank">JavaScript</a>",
+"<a href="http://adrianmejia.com/blog/categories/java/" target="_blank">Java</a>",
+"<a href="http://jquery.com/" target="_blank">jQuery</a>",
+"<a href="http://adrianmejia.com/blog/categories/html/" target="_blank">HTML5</a>",
+"<a href="http://www.linkedin.com/in/adrianmejia" target="_blank">etc.</a>"],<br>
+"interests": [
+"<a href="http://adrianmejia.com/blog/categories/web-development/" target="_blank">Web development</a>",
+"<a href="http://adrianmejia.com/blog/categories/software-architecture/" target="_blank">Software Architecture</a>",
+"<a href="http://adrianmejia.com/blog/categories/nosql/" target="_blank">NoSQL Databases</a>",
+"<a href="http://adrianmejia.com/blog/categories/algorithms/" target="_blank">Algorithms</a>"],<br>
+}<br>
+</section>
+
+<section class="googleplus even">
+  <h1>
+    <a href="mailto:me@adrianmejia.com">
+			<img src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/email.png" width="32" height="32">
+      Email
+    </a>
+  </h1>
+</section>
+
+
+
+<section class="googleplus odd">
+  <h1>
+    <a href="http://www.linkedin.com/in/adrianmejia">
+			<img src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/linkedin.png" width="32" height="32">
+      Linkedin
+    </a>
+  </h1>
+</section>
+
+
+
+<section class="googleplus first even">
+  <h1>
+    <a href="https://github.com/amejiarosario">
+			<img src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/github.png" width="32" height="32">
+      Github
+    </a>
+  </h1>
+</section>
+
+
+<section class="odd">
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="http://adrianmejia.com/blog/2012/09/13/backbone-js-for-absolute-beginners-getting-started-part-4/">Backbone.js for absolute beginners - getting started (part 4: Routers)</a>
+      </li>
+    
+      <li class="post">
+        <a href="http://adrianmejia.com/blog/2012/09/13/backbonejs-for-absolute-beginners-getting-started-part-3/">Backbone.js for absolute beginners - getting started (part 3: CRUD)</a>
+      </li>
+    
+      <li class="post">
+        <a href="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog.htm">Backbone.js for absolute beginners - getting started (part 2: Models, Collections and Views)</a>
+      </li>
+    
+      <li class="post">
+        <a href="http://adrianmejia.com/blog/2012/09/11/backbone-dot-js-for-absolute-beginners-getting-started/">Backbone.js for Absolute Beginners - Getting started (Part 1: Intro)</a>
+      </li>
+    
+      <li class="post">
+        <a href="http://adrianmejia.com/blog/2012/05/06/instagram-mobile-design-secrets-revealed/">Instagram mobile design secrets revealed</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="even">
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos"><li><a href="https://github.com/amejiarosario/algorithms_part1">algorithms_part1</a><p></p></li><li><a href="https://github.com/amejiarosario/shirika">shirika</a><p>organize and prioritize resource list</p></li><li><a href="https://github.com/amejiarosario/Backbone-tutorial">Backbone-tutorial</a><p>Fat-free Backbone.js tutorial (walkthrough for absolute beginners)</p></li><li><a href="https://github.com/amejiarosario/footprint">footprint</a><p></p></li><li><a href="https://github.com/amejiarosario/qacer">qacer</a><p>ToDo App in meteor.js</p></li></ul>
+  
+  <a href="https://github.com/amejiarosario">@amejiarosario</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'amejiarosario',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section class="first odd">
+  <h1>On Delicious</h1>
+  <div id="delicious"><ul><li><a href="http://bootswatch.com/" title="Tags: bootstrap">Bootswatch: Free themes for Twitter Bootstrap</a></li><li><a href="http://davidhauser.com/post/35203066523/advice-from-21-entrepreneurs?utm_source=hackernewsletter&utm_medium=email" title="Tags: rate:10, blogs, Inspiration">David Hauser - 25 Entrepreneurs Tell What They Wish They’d Known before Founding Their First Startup</a></li><li><a href="http://cssdeck.com/codecasts#launch?utm_source=html5weekly&utm_medium=email" title="Tags: tutorial, css3">Learn HTML5, CSS3, Javascript | CSSDeck</a></li></ul></div>
+  <script type="text/javascript" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/adriansky"></script>
+  <p><a href="http://delicious.com/adriansky">My Delicious Bookmarks »</a></p>
+</section>
+
+<section class="even">
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("amejiarosario", 5, false);
+    });
+  </script>
+  <script src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/twitter.js" type="text/javascript"> </script>
+  
+    <iframe allowtransparency="true" frameborder="0" scrolling="no" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/tweet_button.1374787011.htm" class="twitter-follow-button twitter-follow-button" title="Twitter Follow Button" data-twttr-rendered="true" style="width: 150px; height: 20px;"></iframe>
+  
+</section>
+
+
+
+  
+</aside>
+
+
+    <span class="toggle-sidebar"></span></div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright © 2011-2013 | <a href="http://adrianmejia.com/">Adrian Mejia</a>
+  <!-- <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> -->
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'adrianmejia';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://adrianmejia.com/blog/2012/09/13/backbone-js-for-absolute-beginners-getting-started-part-2/';
+        var disqus_url = 'http://adrianmejia.com/blog/2012/09/13/backbone-js-for-absolute-beginners-getting-started-part-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="fb_xdm_frame_http" frameborder="0" allowtransparency="true" scrolling="no" id="fb_xdm_frame_http" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tab-index="-1" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/xd_arbiter.htm" style="border: none;"></iframe><iframe name="fb_xdm_frame_https" frameborder="0" allowtransparency="true" scrolling="no" id="fb_xdm_frame_https" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tab-index="-1" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/xd_arbiter(1).htm" style="border: none;"></iframe></div></div><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="f8d86e988" frameborder="0" allowtransparency="true" scrolling="no" src="./Backbone.js for absolute beginners - getting started (part 2  Models, Collections and Views) - Adrian Mejia's [code]Blog_files/ping.htm" style="display: none;"></iframe></div></div></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body></html>
