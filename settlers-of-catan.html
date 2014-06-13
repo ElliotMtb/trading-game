@@ -14,6 +14,7 @@
 		<script src="backbone-min.js" type="text/javascript"></script>
 		<script src="backbone.localStorage-min.js" type="text/javascript"></script> 
 		<script src= "kinetic-v4.5.5.min.js" type="text/javascript"></script>
+		<script src="pieces-builder.js" type="text/javascript"></script>
 	</head>
 	
 	<body>
@@ -509,8 +510,8 @@
       var radiusToFirstRing = hexRadius*Math.sqrt(3);
       var radiusToSecondRing;
 
-      var ring1StartX = 300; //+ radiusToFirstRing;
-      var ring1StartY = 250;
+      var ring1StartX = 450; //+ radiusToFirstRing;
+      var ring1StartY = 450;
 
       var ring1EndX = ring1StartX;
       var ring1EndY = ring1StartY;
@@ -662,8 +663,140 @@
 			
       }
 
-     
+		var radiusToThirdRing;
+		var k;
+		var angle;
+		var primaryAngle = -1*2*Math.PI/6;
+		var ringNumber = 3;
+		var m;
 
+		var angleList = [ringNumber];
+		var radiiList = [ringNumber];
+
+		// Draw outside "ocean" border ring
+		var x;
+		for(x=0; x<1; x++)
+		{
+			var ringN;
+
+			for(ringN =0; ringN<ringNumber; ringN++)
+			{
+			var aLeg = (ringNumber-0.5*ringN)*radiusToFirstRing;
+			var bLeg = (0+1.5*ringN)*hexRadius;
+
+			angleList[ringN] = -1*Math.atan(bLeg/aLeg);
+			radiiList[ringN] =  Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg,2));
+			}
+
+			var primaryPosition;
+		  
+			for(k=0; k <=(ringNumber*6)-1; k++)
+			{
+				primaryPosition = Math.floor(k/ringNumber)*primaryAngle;
+
+				for(m=0; m<ringNumber; m++)
+				{
+					if( k % ringNumber == m)
+					{
+						var aLeg = (ringNumber-0.5*m)*radiusToFirstRing;
+						var bLeg = (0+1.5*m)*hexRadius;
+						
+						//radiusToThirdRing = Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg,2));
+						radiusToThirdRing = radiiList[m];
+						//angle = -1*Math.atan(bLeg/aLeg) + primaryPosition;
+						angle = angleList[m] + primaryPosition;
+					}
+
+					ring1EndX = this.getXYatArcEnd(ring1StartX, ring1StartY, radiusToThirdRing, angle)[0];
+					ring1EndY = this.getXYatArcEnd(ring1StartX, ring1StartY, radiusToThirdRing, angle)[1];
+
+					var hexGuid = k + 20;
+
+					var hexPiece = app.nextHexPiece();
+
+					app.ring[hexGuid] = new Kinetic.RegularPolygon({
+					x: ring1EndX,
+					y: ring1EndY,
+					sides: 6,
+					radius: hexRadius,
+					fill: 'cyan',
+					stroke: 'black',
+					strokeWidth: 1,
+					id: hexGuid
+					});
+					
+					kineticLayer.add(app.ring[hexGuid]);
+				}
+			}
+				  
+			ringNumber++;
+		}
+	  
+	  /*
+	  //IDEA! Should develop board as a collection of hex-center points, and unique list of vertices, when building the vertices (6 around each center point), can have a unique list of vertices...only add to the unique list if not there, if vertex "collides" with existing vertex (could use a box region for collision detection) then don't add new vertex, but rather add the hex-center point as an adjacency, and add the "previous" vertex as adjacency as well (even after collision, keep sweeping around all 6 vertices of the center-point...to make sure everything gets updated if necessary). In this way, a unique list of vertices will be build along with information regarding adjacent hexes and vertices.
+	  
+	  //note: when "sweeping" around a center point, any newly created vertices should have "null/empty" adjacent vertices and hexes...that way, the //edges of the board will already be initialized by the time the board is built (collisions will be how the "empty/null" adjacencies become occupied).
+	  
+	  //Then, roads can be build to adjacenct vertices and settlements can occupy a vertex with knowledge of which 2 or 3 hexes it is adjacent to (for resource type and number
+	  */
+	  
+	  var circlesX;
+	  for( circlesX = 0; circlesX < 6; circlesX++)
+	  {
+		angle = -1*2*Math.PI/6 * circlesX + -1*2*Math.PI/12;
+		ring1EndX = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius, angle)[0];
+	  ring1EndY = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius, angle)[1];
+	  
+	  var newCircle = new Kinetic.Circle({
+	        x: ring1EndX,
+	        y: ring1EndY,
+	        radius: 10,
+	        fill: 'magenta',
+	        stroke: 'black',
+	        strokeWidth: 1,
+      		});
+			
+		kineticLayer.add(newCircle);
+	  }
+	  for( circlesX = 0; circlesX < 6; circlesX++)
+	  {
+		angle = -1*2*Math.PI/6 * circlesX + -1*2*Math.PI/12;
+		ring1EndX = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius*2, angle)[0];
+	  ring1EndY = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius*2, angle)[1];
+	  
+	  var newCircle = new Kinetic.Circle({
+	        x: ring1EndX,
+	        y: ring1EndY,
+	        radius: 10,
+	        fill: 'magenta',
+	        stroke: 'black',
+	        strokeWidth: 1,
+      		});
+			
+		kineticLayer.add(newCircle);
+		
+		makeCity(ring1EndX, ring1EndY, 15, 'blue', kineticLayer);
+	  }
+	  for( circlesX = 0; circlesX < 6; circlesX++)
+	  {
+		angle = -1*2*Math.PI/6 * circlesX + -1*2*Math.PI/12;
+		ring1EndX = this.getXYatArcEnd(ring1StartX, ring1StartY, 4*hexRadius, angle)[0];
+	  ring1EndY = this.getXYatArcEnd(ring1StartX, ring1StartY, 4*hexRadius, angle)[1];
+	  
+	  var newCircle = new Kinetic.Circle({
+	        x: ring1EndX,
+	        y: ring1EndY,
+	        radius: 10,
+	        fill: 'magenta',
+	        stroke: 'black',
+	        strokeWidth: 1,
+      		});
+			
+		kineticLayer.add(newCircle);
+		
+		makeSettlement(ring1EndX, ring1EndY, 15, 'red', kineticLayer);
+	  }
+	  
 	    ///hexboard
 
 	    //kineticLayer.add(myHex.model.hex);
@@ -769,6 +902,7 @@
 
 	app.router = new app.Router();
 	Backbone.history.start();    
+	
 
 	</script>
 
