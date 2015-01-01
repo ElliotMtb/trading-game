@@ -32,10 +32,11 @@
 					<a href="#/begin">Start the Game</a>
 				 </div>
 			</header>
-			<section id="main">
+			<section style="display: inline-block; width: 600px; float: right;"id="main">
 				<ul id="players-list"></ul>
+				<ul id="intersections-list"></ul>
 			</section>
-			<div id="gameBoardContainer" height="1200" width="1200">
+			<div style="width: 550px;" id="gameBoardContainer" height="1200" width="1200">
 
 			</div>	
 		</section>
@@ -50,6 +51,13 @@
 				<button class="destroy">remove</button>
 			</div>
 		</script>  
+		
+		<script type="text/template" id="intersect-template">
+			<div class="view">
+				<label>Intersection #<%- id%></label>
+				<button class="highlight">Highlight on board</button>
+			</div>
+		</script>
 
 	<!-- =============== -->
 	<!-- Javascript code -->
@@ -347,6 +355,12 @@
 
 
 	app.ring = {};
+	
+	app.vertices = [];
+	app.verticesText = [];
+	
+	app.intersectToHexesAdjacency = [];
+	app.intersectToIntersectAdjacency = [];
 
 	//--------------
 	// Models
@@ -377,6 +391,43 @@
 		}
 	});
 
+	app.IntersectionModel = Backbone.Model.extend({
+		defaults: {
+			id: '',
+			x: '',
+			y: ''
+		},
+		addAdjacentHex: function(hexId){
+			this.adjacentHexes.push(hexId);
+		},
+		highlightOnBoard: function(){
+		
+			var adjacentHexes = app.intersectToHexesAdjacency[this.id];
+			
+			var stringListOfHexes = "";
+			
+			for(var i=0; i<adjacentHexes.length; i++)
+			{
+				stringListOfHexes+= adjacentHexes[i] += ",";
+			}
+			
+			var stringAdjacentIntersects = "";
+			
+			var adjancentIntersections = app.intersectToIntersectAdjacency[this.id];
+			
+			for (var i=0; i < adjancentIntersections.length; i++)
+			{
+				stringAdjacentIntersects+= adjancentIntersections[i] += ",";
+			}
+			
+			alert("adjacent to hex #: " + stringListOfHexes + " adjacent to intersections: " + stringAdjacentIntersects);
+			
+			app.vertices[this.id].setStroke("yellow");
+			app.vertices[this.id].setStrokeWidth(3);
+			app.vertices[this.id].draw();
+		}
+	});
+	
 	app.CatanHex = Backbone.Model.extend({
 		defaults: {
 			resourceType: 'desert',
@@ -430,10 +481,16 @@
 
 	});
 
-
 	//--------------
 	// Collections
 	//--------------
+	
+	app.HexIntersectionsList = Backbone.Collection.extend({
+		model: app.IntersectionModel,
+		localStorage: new Store("hex-intersection")
+	});
+	
+	
 	app.PlayerList = Backbone.Collection.extend({
 	  model: app.Player,
       localStorage: new Store("settlers-of-catan"),
@@ -458,11 +515,33 @@
 
 	// instance of the Collection
 	app.playerList = new app.PlayerList();
+	app.hexIntersectList = new app.HexIntersectionsList();
 
 	//--------------
 	// Views
 	//--------------
 
+	// renders list of intersections
+	app.IntersectionView = Backbone.View.extend({
+		tagName: 'li',
+		template: _.template($('#intersect-template').html()),
+		render: function(){
+			this.$el.html(this.template(this.model.toJSON()));
+			return this; // enable chained calls
+		},
+		initialize: function(){
+			this.model.on('change', this.render, this);
+		},
+		events: {
+			'click .highlight': 'highlight'
+		},
+		highlight: function(e){
+		this.model.highlightOnBoard();
+		//app.kineticLayer.draw();
+		
+		}
+	});
+	
 	// renders individual player items list (li)
 	app.PlayerView = Backbone.View.extend({
 	  tagName: 'li',
@@ -494,24 +573,143 @@
 	  }
 	});
 
+	app.CurrentIntersectionId = 0;
+	
+	app.nextIntersectionId = function(){
+		
+		// Return BEFORE incrementing
+		return app.CurrentIntersectionId++;
+	}
+	
 	// renders the full list of todo items calling TodoView for each one.
 	app.SetupView = Backbone.View.extend({
 	  el: '#settlersapp',
+	  hexVerticesRadialSweep: function(centerX, centerY, hexRadius, idOfCurrentHex){
+		
+		var vertexX;
+		var vertexY;
+		var i;
+		
+					
+		var lastIntersectionInSweep;
+		
+		for (i= 0; i < 6; i++)
+		{
+			vertexX = this.getXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[0];
+			vertexY = this.getXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[1];
+			
+			var collisionIndex = this.checkForCollision(vertexX,vertexY);
+
+			if (collisionIndex == -1)
+			{
+				var intersectionId = app.nextIntersectionId();
+				
+				app.vertices[intersectionId] = new Kinetic.Circle({
+				x: vertexX,
+				y: vertexY,
+				radius: 10,
+				fill: 'magenta',
+				stroke: 'black',
+				strokeWidth: 1,
+				id: intersectionId
+				});
+				
+				app.verticesText[intersectionId] = new Kinetic.Text({
+				x: vertexX + 10,
+				y: vertexY,
+				text: intersectionId,
+				fontSize: 15,
+				fontFamily: 'Calibri',
+				fill: 'red'
+				});
+				
+				this.createIntersection(intersectionId, vertexX, vertexY);
+				
+				var currentHexType = app.ring[idOfCurrentHex];
+				
+				app.intersectToHexesAdjacency[intersectionId] = [];
+				app.intersectToHexesAdjacency[intersectionId].push(idOfCurrentHex);
+				
+				
+				
+				app.intersectToIntersectAdjacency[intersectionId] = [];
+				app.intersectToIntersectAdjacency[intersectionId].push(intersectionId);
+				app.intersectToIntersectAdjacency[intersectionId].push(lastIntersectionInSweep);
+				
+				lastIntersectionInSweep = intersectionId;
+				
+				app.vertices[intersectionId].on('click', function(e){
+
+					this.setStroke("blue");
+					this.setStrokeWidth(3);
+					this.draw();
+				});
+				
+			}
+			else{
+				// Don't create a new intersection
+				// ...rather, update adjacent hexes list for existing intersection.
+				var currentHexType = app.ring[idOfCurrentHex];
+				
+				app.intersectToHexesAdjacency[collisionIndex].push(idOfCurrentHex);
+				
+				app.intersectToIntersectAdjacency[collisionIndex].push(lastIntersectionInSweep);
+				
+				lastIntersectionInSweep = collisionIndex;
+			}
+			
+			
+		
+		// Perhaps should delay adding until the end to show on top of everything else
+		//app.kineticLayer.add(app.vertices[intersectionId]);
+		}
+	  },
+	  checkForCollision: function (x,y){
+		
+		for (var i = 0; i < app.vertices.length; i++)
+		{
+			var intersectionPosition = app.vertices[i].getPosition();
+			
+			if (this.distance(intersectionPosition.x, intersectionPosition.y, x, y) < 2)
+			{
+				console.log("Collision detected!");
+				return i;
+			}
+		}
+		
+		return -1;
+	  },
+	  distance: function(fromX, fromY, toX, toY){
+		var aSqr = Math.pow(fromX - toX, 2);
+		var bSqr = Math.pow(fromY - toY, 2);
+		
+		var c = Math.sqrt(aSqr + bSqr);
+		
+		return c;
+	  },
 	  initialize: function (kineticLayer, practiceHex) {
+	  
+		//window.localStorage.removeItem('hex-intersection');
+		//window.localStorage.removeItem('settlers-of-catan');
+		window.localStorage.clear();
+		
 	    this.input = this.$('#new-player');
 	    app.playerList.on('add', this.addAll, this);
 	    app.playerList.on('reset', this.addAll, this);
 	    app.playerList.fetch(); // Loads list from local storage
+		
+		app.hexIntersectList.on('showIntersections', this.addAllIntersections, this);
+		
 
 	    //var myHex = new app.CatanHexView({model: new app.CatanHex()});
 	    //hexboard
 
-      var hexRadius = 60;
+      var hexRadius = 45;
       var radiusToFirstRing = hexRadius*Math.sqrt(3);
       var radiusToSecondRing;
 
-      var ring1StartX = 450; //+ radiusToFirstRing;
-      var ring1StartY = 450;
+      var ring1StartX = 300; //+ radiusToFirstRing;
+      var ring1StartY = 250;
 
       var ring1EndX = ring1StartX;
       var ring1EndY = ring1StartY;
@@ -547,8 +745,10 @@
         fontFamily: 'Calibri',
         fill: 'red'
       });
-
-
+	 
+	  this.hexVerticesRadialSweep(ring1StartX, ring1StartY, hexRadius, centerGuid);
+	  
+		
       kineticLayer.add(app.ring[centerGuid]);
 
       kineticLayer.add(centerText);
@@ -595,7 +795,11 @@
         fill: 'red'
       	});
 
+		
+		
 		kineticLayer.add(app.ring[hexGuid]);
+		
+		this.hexVerticesRadialSweep(ring1EndX, ring1EndY, hexRadius, hexGuid);
 
 		kineticLayer.add(ring1Text);
 
@@ -652,6 +856,8 @@
 	      	});
 
 	      	kineticLayer.add(app.ring[hexGuid]);
+			
+			this.hexVerticesRadialSweep(ring1EndX, ring1EndY, hexRadius, hexGuid);
 
 	      	kineticLayer.add(ring2Text);
 
@@ -737,68 +943,17 @@
 	  
 	  //note: when "sweeping" around a center point, any newly created vertices should have "null/empty" adjacent vertices and hexes...that way, the //edges of the board will already be initialized by the time the board is built (collisions will be how the "empty/null" adjacencies become occupied).
 	  
-	  //Then, roads can be build to adjacenct vertices and settlements can occupy a vertex with knowledge of which 2 or 3 hexes it is adjacent to (for resource type and number
+	  //Then, roads can be build to adjacent vertices and settlements can occupy a vertex with knowledge of which 2 or 3 hexes it is adjacent to (for resource type and number
 	  */
-	  
-	  var circlesX;
-	  for( circlesX = 0; circlesX < 6; circlesX++)
-	  {
-		angle = -1*2*Math.PI/6 * circlesX + -1*2*Math.PI/12;
-		ring1EndX = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius, angle)[0];
-	  ring1EndY = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius, angle)[1];
-	  
-	  var newCircle = new Kinetic.Circle({
-	        x: ring1EndX,
-	        y: ring1EndY,
-	        radius: 10,
-	        fill: 'magenta',
-	        stroke: 'black',
-	        strokeWidth: 1,
-      		});
-			
-		kineticLayer.add(newCircle);
-	  }
-	  for( circlesX = 0; circlesX < 6; circlesX++)
-	  {
-		angle = -1*2*Math.PI/6 * circlesX + -1*2*Math.PI/12;
-		ring1EndX = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius*2, angle)[0];
-	  ring1EndY = this.getXYatArcEnd(ring1StartX, ring1StartY, hexRadius*2, angle)[1];
-	  
-	  var newCircle = new Kinetic.Circle({
-	        x: ring1EndX,
-	        y: ring1EndY,
-	        radius: 10,
-	        fill: 'magenta',
-	        stroke: 'black',
-	        strokeWidth: 1,
-      		});
-			
-		kineticLayer.add(newCircle);
-		
-		makeCity(ring1EndX, ring1EndY, 15, 'blue', kineticLayer);
-	  }
-	  for( circlesX = 0; circlesX < 6; circlesX++)
-	  {
-		angle = -1*2*Math.PI/6 * circlesX + -1*2*Math.PI/12;
-		ring1EndX = this.getXYatArcEnd(ring1StartX, ring1StartY, 4*hexRadius, angle)[0];
-	  ring1EndY = this.getXYatArcEnd(ring1StartX, ring1StartY, 4*hexRadius, angle)[1];
-	  
-	  var newCircle = new Kinetic.Circle({
-	        x: ring1EndX,
-	        y: ring1EndY,
-	        radius: 10,
-	        fill: 'magenta',
-	        stroke: 'black',
-	        strokeWidth: 1,
-      		});
-			
-		kineticLayer.add(newCircle);
-		
-		makeSettlement(ring1EndX, ring1EndY, 15, 'red', kineticLayer);
-	  }
-	  
+	
 	    ///hexboard
-
+		
+		for (var i = 0; i < app.vertices.length; i++)
+		{
+			app.kineticLayer.add(app.vertices[i]);
+			app.kineticLayer.add(app.verticesText[i]);
+		}
+		
 	    //kineticLayer.add(myHex.model.hex);
 
 	    app.Stage.add(kineticLayer);
@@ -823,9 +978,12 @@
 			return [c1+Math.cos(angle)*radius,c2+Math.sin(angle)*radius];
 	  },
 	  events: {
-	    'keypress #new-player': 'createTodoOnEnter'
+	    'keypress #new-player': 'createPlayer'
 	  },
-	  createTodoOnEnter: function(e){
+	  createIntersection: function(id, x, y){
+		app.hexIntersectList.create({'id':id,'x':x,'y':y});
+	  },
+	  createPlayer: function(e){
 	    if ( e.which !== 13 || !this.input.val().trim() ) { // ENTER_KEY = 13
 	      return;
 	    }
@@ -837,7 +995,7 @@
 	    $('#players-list').append(view.render().el);
 	  },
 	  addAll: function(){
-	    var theList = this.$('#players-list')
+	    var theList = this.$('#players-list');
 	    theList.html(''); // clean the todo list
 	    switch(window.filter){
 	
@@ -857,6 +1015,15 @@
 		
 		    	break;
 	    }
+	  },
+	  addAllIntersections: function(){
+		var theList = this.$('#intersections-list');
+		theList.html('');
+		app.hexIntersectList.each(this.addOneIntersection, this);
+	  },
+	  addOneIntersection: function(intersection){
+	  var view = new app.IntersectionView({model: intersection});
+	    $('#intersections-list').append(view.render().el);
 	  },
 	  newAttributes: function(){
 	    return {
@@ -885,6 +1052,7 @@
 		}
 
 	    app.playerList.trigger('reset');
+		app.hexIntersectList.trigger('showIntersections');
 	  }
 	});     
 
@@ -892,8 +1060,6 @@
 	// Initializers
 	//--------------   
 
-
-	
 	app.playerView = new app.SetupView(app.kineticLayer, app.testPolyHex); 
 
 	
