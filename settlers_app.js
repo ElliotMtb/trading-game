@@ -207,7 +207,26 @@ app.HexPieces = [	new app.rockPiece(),
 					new app.woodPiece(),
 					new app.woodPiece(),
 					new app.desertPiece()];
-
+					
+app.handleSweepCollide = function (idOfCurrentHex, collisionIndex, lastIntersectionInSweep) {
+	// Don't create a new intersection
+	// ...rather, update adjacent hexes list for existing intersection.
+	var currentHexType = app.ring[idOfCurrentHex];
+	
+	if (app.intersectToHexesAdjacency[collisionIndex].indexOf(idOfCurrentHex) === -1)
+	{
+		app.intersectToHexesAdjacency[collisionIndex].push(idOfCurrentHex);
+	}
+	
+	if (lastIntersectionInSweep)
+	{
+		if (app.intersectToIntersectAdjacency[collisionIndex].indexOf(lastIntersectionInSweep) === -1)
+		{
+			app.intersectToIntersectAdjacency[collisionIndex].push(lastIntersectionInSweep);
+		}
+	}
+};
+				
 app.bindIntersectClick = function(intersectionId) {
 	
 	app.vertices[intersectionId].on('click', function(e){
@@ -598,8 +617,9 @@ app.SetupView = Backbone.View.extend({
 		var i;
 	
 		var lastIntersectionInSweep;
-	
-		for (i= 0; i < 6; i++)
+		
+		// Forward sweep
+		for (i= 0; i < 7; i++)
 		{
 			vertexX = this.getXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[0];
 			vertexY = this.getXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[1];
@@ -634,11 +654,28 @@ app.SetupView = Backbone.View.extend({
 				var currentHexType = app.ring[idOfCurrentHex];
 				
 				app.intersectToHexesAdjacency[intersectionId] = [];
-				app.intersectToHexesAdjacency[intersectionId].push(idOfCurrentHex);
+				
+				if (app.intersectToHexesAdjacency[intersectionId].indexOf(idOfCurrentHex) === -1)
+				{
+					app.intersectToHexesAdjacency[intersectionId].push(idOfCurrentHex);
+				}
 				
 				app.intersectToIntersectAdjacency[intersectionId] = [];
-				app.intersectToIntersectAdjacency[intersectionId].push(intersectionId);
-				app.intersectToIntersectAdjacency[intersectionId].push(lastIntersectionInSweep);
+				
+				if (app.intersectToIntersectAdjacency[intersectionId].indexOf(intersectionId) === -1)
+				{
+					app.intersectToIntersectAdjacency[intersectionId].push(intersectionId);
+				}
+				
+				// At the start of the sweep, there is no "previous" intersection in the sweep
+				if (lastIntersectionInSweep !== undefined)
+				{
+				
+					if (app.intersectToIntersectAdjacency[intersectionId].indexOf(lastIntersectionInSweep) === -1)
+					{
+						app.intersectToIntersectAdjacency[intersectionId].push(lastIntersectionInSweep);
+					}
+				}
 				
 				lastIntersectionInSweep = intersectionId;
 
@@ -646,19 +683,39 @@ app.SetupView = Backbone.View.extend({
 			}
 			else
 			{
-				// Don't create a new intersection
-				// ...rather, update adjacent hexes list for existing intersection.
-				var currentHexType = app.ring[idOfCurrentHex];
-				
-				app.intersectToHexesAdjacency[collisionIndex].push(idOfCurrentHex);
-				
-				app.intersectToIntersectAdjacency[collisionIndex].push(lastIntersectionInSweep);
+				app.handleSweepCollide(idOfCurrentHex, collisionIndex, lastIntersectionInSweep);
 				
 				lastIntersectionInSweep = collisionIndex;
 			}
 		
 		// Perhaps should delay adding until the end to show on top of everything else
 		//app.kineticLayer.add(app.vertices[intersectionId]);
+		}
+		
+		var vertexX;
+		var vertexY;
+		var i;
+	
+		var lastIntersectionInSweep;
+		
+		// Reverse sweep (makes sure to get all the vertice adjacencies on the boundaries of the game board)
+		for (i= 6; i >= 0; i--)
+		{
+			vertexX = this.getXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[0];
+			vertexY = this.getXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[1];
+			
+			var collisionIndex = this.checkForCollision(vertexX,vertexY);
+
+			if (collisionIndex == -1)
+			{
+				// There should be no new intersections, because this is the second pass (in reverse)
+			}
+			else
+			{
+				app.handleSweepCollide(idOfCurrentHex, collisionIndex, lastIntersectionInSweep);
+				
+				lastIntersectionInSweep = collisionIndex;
+			}
 		}
 	},
 	checkForCollision: function (x,y){
