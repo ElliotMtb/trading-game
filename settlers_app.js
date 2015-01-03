@@ -207,25 +207,6 @@ app.HexPieces = [	new app.rockPiece(),
 					new app.woodPiece(),
 					new app.woodPiece(),
 					new app.desertPiece()];
-					
-app.handleSweepCollide = function (idOfCurrentHex, collisionIndex, lastIntersectionInSweep) {
-	// Don't create a new intersection
-	// ...rather, update adjacent hexes list for existing intersection.
-	var currentHexType = app.ring[idOfCurrentHex];
-	
-	if (app.intersectToHexesAdjacency[collisionIndex].indexOf(idOfCurrentHex) === -1)
-	{
-		app.intersectToHexesAdjacency[collisionIndex].push(idOfCurrentHex);
-	}
-	
-	if (lastIntersectionInSweep)
-	{
-		if (app.intersectToIntersectAdjacency[collisionIndex].indexOf(lastIntersectionInSweep) === -1)
-		{
-			app.intersectToIntersectAdjacency[collisionIndex].push(lastIntersectionInSweep);
-		}
-	}
-};
 				
 app.bindIntersectClick = function(intersectionId) {
 	
@@ -626,7 +607,7 @@ app.SetupView = Backbone.View.extend({
 			
 			var collisionIndex = this.checkForCollision(vertexX,vertexY);
 
-			if (collisionIndex == -1)
+			if (collisionIndex === -1)
 			{
 				var intersectionId = app.nextIntersectionId();
 				
@@ -683,7 +664,7 @@ app.SetupView = Backbone.View.extend({
 			}
 			else
 			{
-				app.handleSweepCollide(idOfCurrentHex, collisionIndex, lastIntersectionInSweep);
+				this.handleSweepCollide(idOfCurrentHex, collisionIndex, lastIntersectionInSweep);
 				
 				lastIntersectionInSweep = collisionIndex;
 			}
@@ -706,13 +687,13 @@ app.SetupView = Backbone.View.extend({
 			
 			var collisionIndex = this.checkForCollision(vertexX,vertexY);
 
-			if (collisionIndex == -1)
+			if (collisionIndex === -1)
 			{
 				// There should be no new intersections, because this is the second pass (in reverse)
 			}
 			else
 			{
-				app.handleSweepCollide(idOfCurrentHex, collisionIndex, lastIntersectionInSweep);
+				this.handleSweepCollide(idOfCurrentHex, collisionIndex, lastIntersectionInSweep);
 				
 				lastIntersectionInSweep = collisionIndex;
 			}
@@ -732,6 +713,24 @@ app.SetupView = Backbone.View.extend({
 		}
 	
 		return -1;
+	},
+	handleSweepCollide: function (idOfCurrentHex, collisionIndex, lastIntersectionInSweep) {
+		// Don't create a new intersection
+		// ...rather, update adjacent hexes list for existing intersection.
+		var currentHexType = app.ring[idOfCurrentHex];
+		
+		if (app.intersectToHexesAdjacency[collisionIndex].indexOf(idOfCurrentHex) === -1)
+		{
+			app.intersectToHexesAdjacency[collisionIndex].push(idOfCurrentHex);
+		}
+		
+		if (lastIntersectionInSweep !== undefined)
+		{
+			if (app.intersectToIntersectAdjacency[collisionIndex].indexOf(lastIntersectionInSweep) === -1)
+			{
+				app.intersectToIntersectAdjacency[collisionIndex].push(lastIntersectionInSweep);
+			}
+		}
 	},
 	distance: function(fromX, fromY, toX, toY) {
 		var aSqr = Math.pow(fromX - toX, 2);
@@ -811,7 +810,7 @@ app.SetupView = Backbone.View.extend({
 			app.SelectHex(this.getAttr('id'));
 		});
 
-		for(i=0; i <=5; i++)
+		for(i=0; i < 6; i++)
 		{
 			ring1EndX =this.getXYatArcEnd(ring1StartX, ring1StartY, radiusToFirstRing, -1*i*2*Math.PI/6)[0];
 			ring1EndY =this.getXYatArcEnd(ring1StartX, ring1StartY, radiusToFirstRing, -1*i*2*Math.PI/6)[1];
@@ -861,7 +860,7 @@ app.SetupView = Backbone.View.extend({
 
 		var j;
 		
-		for(j=0; j <=11; j++)
+		for(j=0; j < 12; j++)
 		{
 			if (j % 2 == 1){
 				radiusToSecondRing = 3 * hexRadius;
