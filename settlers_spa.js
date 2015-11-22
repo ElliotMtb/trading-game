@@ -2,6 +2,9 @@ var app = (function() {
 
 	var initModule = function () {
 		
+		SetupView.initView();
+		PlayerView.initView();
+		
 		//--------------
 		// Initializers
 		//--------------   

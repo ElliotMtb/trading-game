@@ -3,8 +3,8 @@
 app.kineticLayer = new Kinetic.Layer();
 app.Stage = new Kinetic.Stage({
 	container: 'gameBoardContainer',
-	width: 900,
-	height: 900
+	width: 600,
+	height: 500
 });
 
 app.newGuid = function(){
