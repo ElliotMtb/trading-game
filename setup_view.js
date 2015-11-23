@@ -5,25 +5,6 @@ var SetupView = (function() {
 		// renders the full list of todo items calling TodoView for each one.
 
 		// renders list of intersections
-		app.IntersectionView = Backbone.View.extend({
-			tagName: 'li',
-			template: _.template($('#intersect-template').html()),
-			render: function(){
-				this.$el.html(this.template(this.model.toJSON()));
-				return this; // enable chained calls
-			},
-			initialize: function(){
-				this.model.on('change', this.render, this);
-			},
-			events: {
-				'click .highlight': 'highlight'
-			},
-			highlight: function(e){
-			this.model.highlightOnBoard();
-			this.model.alertAdjacencies();
-			}
-		});
-
 		app.SetupView = Backbone.View.extend({
 			el: '#settlersapp',
 			hexVerticesRadialSweep: function(centerX, centerY, hexRadius, idOfCurrentHex){
