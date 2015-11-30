@@ -36,6 +36,7 @@ app.vertices = [];
 app.verticesText = [];
 
 app.roads = [];
+app.roadCenterPoints = [];
 
 app.intersectToHexesAdjacency = [];
 app.intersectToIntersectAdjacency = [];

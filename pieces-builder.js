@@ -7,15 +7,15 @@ function makeSettlement(x,y,r,color,layer){
 	
 	settlement.front = makeBlock(x,frontY,frontRadius,color);
 
-	  var roofY = frontY - frontRadius/(Math.sqrt(2));
-	  var roofRadius = frontRadius/(Math.sqrt(2));
-	  
-	  settlement.front.rotateDeg(45);
-	  
-	  settlement.roof = makeBlock(x,roofY,roofRadius,color);
-	  
-	  layer.add(settlement.roof);
-	  layer.add(settlement.front);
+	var roofY = frontY - frontRadius/(Math.sqrt(2));
+	var roofRadius = frontRadius/(Math.sqrt(2));
+
+	settlement.front.rotateDeg(45);
+
+	settlement.roof = makeBlock(x,roofY,roofRadius,color);
+
+	layer.add(settlement.roof);
+	layer.add(settlement.front);
 }
 function makeCity(x,y,r,color,kineticLayer){
 	
@@ -57,5 +57,34 @@ function makeBlock(x,y,r,color){
         //id: centerGuid
       });
 	  
+	return block;
+}
+
+function makeRectangle(rectX,rectY,w,h,color) {
+	
+	var rect = new Kinetic.Rect({
+		x: rectX,
+		y: rectY,
+		width: w,
+		height: h,
+		fill: color,
+		stroke: 'black',
+		strokeWidth: 1
+	});
+	
+	rect.rotation = 0;
+	
+	return rect;
+}
+
+function makeRoad(x,y,length,color,theta) {
+	
+	var w = length;
+	var h = 7;
+	
+	var block = makeRectangle(x,y,w,h,color);
+	
+	block.rotate(theta);
+	
 	return block;
 }

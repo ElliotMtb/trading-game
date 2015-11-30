@@ -1,3 +1,15 @@
+app.bindRoadCenterClick = function(roadCenterId) {
+	
+	app.roadCenterPoints[roadCenterId].on('click', function(e){
+		
+		// TODO: Use "global" road length
+		var road = makeRoad(this.attrs.roadX, this.attrs.roadY, 20, "blue", this.attrs.angle);
+		
+		app.kineticLayer.add(road);
+		app.kineticLayer.draw();
+	});
+};
+
 app.bindIntersectClick = function(intersectionId) {
 	
 	app.vertices[intersectionId].on('click', function(e){

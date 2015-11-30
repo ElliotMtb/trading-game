@@ -53,6 +53,12 @@ var app = (function() {
 			// Return BEFORE incrementing
 			return app.CurrentIntersectionId++;
 		}
+		
+		app.CurrentRoadCenterId = 0;
+		
+		app.nextRoadCenterId = function() {
+			return app.CurrentRoadCenterId++;
+		}
 
 		app.playerList = new app.PlayerList();
 		app.hexIntersectList = new app.HexIntersectionsList();
