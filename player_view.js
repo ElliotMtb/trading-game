@@ -18,7 +18,8 @@ var PlayerView = (function() {
 			events: {
 				'keypress .edit' : 'updateOnEnter',
 				'click .destroy': 'destroy',
-				'click .addPoint': 'addPoint'
+				'click .addPoint': 'addPoint',
+				'click .addResource': 'addResource'
 			},
 			updateOnEnter: function(e){
 				if(e.which == 13){
@@ -31,7 +32,12 @@ var PlayerView = (function() {
 			},
 			addPoint: function(){
 				this.model.addPoint();
+			},
+			addResource: function(e){
+				
+				this.model.addResource($(e.target).attr("value"));
 			}
+			
 		});
 	}
 	

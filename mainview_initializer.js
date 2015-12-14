@@ -82,7 +82,7 @@ var ViewInitializer = (function() {
 		app.roadCenterPoints[roadCenterId] = new Kinetic.Circle({
 			x: verticesMidpointX,
 			y: verticesMidpointY,
-			radius: 5,
+			radius: 10,
 			fill: 'white',
 			stroke: 'black',
 			strokeWidth: 1,
@@ -536,7 +536,7 @@ var ViewInitializer = (function() {
 
 		for(var x = 1; x <= app.IntersectionMap.length; x++)
 		{
-			console.log("Intersection " + x + ":");
+			console.log("Intersection position " + x + ":");
 
 			for(var index = 0; index < app.IntersectionMap[x-1].length; index++)
 			{

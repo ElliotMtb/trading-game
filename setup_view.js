@@ -10,7 +10,7 @@ var SetupView = (function() {
 			//window.localStorage.removeItem('settlers-of-catan');
 			window.localStorage.clear();
 			
-			this.input = this.$('#new-player');
+			this.input = $('#new-player');
 			app.playerList.on('add', this.addAll, this);
 			app.playerList.on('reset', this.addAll, this);
 			app.playerList.fetch(); // Loads list from local storage
@@ -50,10 +50,16 @@ var SetupView = (function() {
 
 					case 'playersWith2Points':
 						_.each(app.playerList.playersWith2Points(), this.addOne);
+						$("#gameBoardContainer").hide();
+						$("#player-container").show();
 						break;
 					case 'begin':
-						break;		
+						$("#gameBoardContainer").show();
+						$("#player-container").hide();
+						break;
 					default:
+						$("#gameBoardContainer").hide();
+						$("#player-container").show();
 						app.playerList.each(this.addOne, this);
 						break;
 				}
