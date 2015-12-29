@@ -1,6 +1,7 @@
 
 app.Intersections = new Array();
 
+// Manual, logical, ring-outline intersection order
 app.IntersectionMap = new Array();
 
 app.IntersectionMap.push([1,2,7]);
@@ -39,6 +40,30 @@ app.IntersectionMap.push([15,16]);
 app.IntersectionMap.push([16,17]);
 app.IntersectionMap.push([17,18]);
 app.IntersectionMap.push([18,19]);
+
+/*
+	The algorithm that I came up with for creating intersection Ids and mapping the
+	intersection-to-intersection and intersection-to-hex adjacencies isn't what I would
+	call a natural/intuitive algorithm. Consequently, here is a "manual" listing of the
+	data, presented in a more logical ordering. This is a helpful way to do a quick-check,
+	to make sure things are making sense.
+*/
+app.printManMappedLogicalOrderIntersectToHexTypes = function() {
+		
+	for(var x = 1; x <= app.IntersectionMap.length; x++)
+	{
+		console.log("Intersection position " + x + ":");
+
+		for(var index = 0; index < app.IntersectionMap[x-1].length; index++)
+		{
+			//alert(app.ring[index].getAttr('id'));
+			var ringIndex = app.IntersectionMap[x-1][index];
+			//alert(app.ring[ringIndex].getAttr('id'));
+
+			console.log("\t" + app.ring[ringIndex].getAttr('hexType'));
+		}
+	}
+};
 
 // Hex 2 added
 // 	1{1.type, 2.type}

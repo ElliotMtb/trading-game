@@ -147,28 +147,28 @@ var ViewInitializer = (function() {
 		return false;
 	};
 	
-	var addNewIntersection = function(idOfCurrentHex, vertexX, vertexY, lastIntersectionInSweep) {
+	var buildBoardIntersection = function(idOfCurrentHex, vertexX, vertexY, lastIntersectionInSweep) {
 		
 		// TODO: refactor global call
 		var intersectionId = app.nextIntersectionId();
 		
 		app.vertices[intersectionId] = new Kinetic.Circle({
-		x: vertexX,
-		y: vertexY,
-		radius: 10,
-		fill: 'magenta',
-		stroke: 'black',
-		strokeWidth: 1,
-		id: intersectionId
+			x: vertexX,
+			y: vertexY,
+			radius: 10,
+			fill: 'magenta',
+			stroke: 'black',
+			strokeWidth: 1,
+			id: intersectionId
 		});
 		
 		app.verticesText[intersectionId] = new Kinetic.Text({
-		x: vertexX + 10,
-		y: vertexY,
-		text: intersectionId,
-		fontSize: 15,
-		fontFamily: 'Calibri',
-		fill: 'red'
+			x: vertexX + 10,
+			y: vertexY,
+			text: intersectionId,
+			fontSize: 15,
+			fontFamily: 'Calibri',
+			fill: 'red'
 		});
 		
 		createIntersection(intersectionId, vertexX, vertexY);
@@ -212,7 +212,7 @@ var ViewInitializer = (function() {
 		// No collision
 		if (collisionIndex === -1)
 		{
-			var newIntersectionId = addNewIntersection(idOfCurrentHex, vertexX, vertexY, lastIntersectionInSweep);
+			var newIntersectionId = buildBoardIntersection(idOfCurrentHex, vertexX, vertexY, lastIntersectionInSweep);
 			
 			lastIntersectionInSweep = newIntersectionId;
 		}
@@ -275,233 +275,38 @@ var ViewInitializer = (function() {
 		//var myHex = new app.CatanHexView({model: new app.CatanHex()});
 		//hexboard
 
-		var hexRadius = 45;
-		var radiusToFirstRing = hexRadius*Math.sqrt(3);
+		app.GameBoardHexRadius = 45;
+		
+		var radiusToFirstRing = app.GameBoardHexRadius*Math.sqrt(3);
 		var radiusToSecondRing;
 		
-		var ring1StartX = 300; //+ radiusToFirstRing;
-		var ring1StartY = 250;
+		app.GameBoardCenterX = 300;
+		app.GameBoardCenterY = 250;
 		
-		var ring1EndX = ring1StartX;
-		var ring1EndY = ring1StartY;
+		//var ring1EndX = ring1StartX;
+		//var ring1EndY = ring1StartY;
 		
 		var i;
-		var hexId = 1;
+		var initialHexId = 1;
 		
 		//var firstRing = new Array();
 		
-		var theCenter = app.nextHexPiece();
-		//var centerGuid = app.newGuid();
-		var centerGuid = 1;
-
-		app.ring[centerGuid] = new Kinetic.RegularPolygon({
-			x: ring1StartX,
-			y: ring1StartY,
-			sides: 6,
-			radius: hexRadius,
-			//fill: theCenter.color,
-			fillPatternImage: theCenter.image,
-			fillPatternOffset: [-78, 70],
-			hexType: theCenter.type,
-			stroke: 'black',
-			strokeWidth: 1,
-			id: centerGuid
-		});
-
-		var centerText = new Kinetic.Text({
-			x: ring1StartX - 7,
-			y: ring1StartY - 15,
-			text: 1,
-			fontSize: 30,
-			fontFamily: 'Calibri',
-			fill: 'red'
-		});
-	 
-		radialSweep(ring1StartX, ring1StartY, hexRadius, centerGuid);
+		drawRing0(initialHexId, kineticLayer);
 		
-		kineticLayer.add(app.ring[centerGuid]);
+		// Center hex
+		var numHexes = 1;
 
-		kineticLayer.add(centerText);
-
-		app.ring[centerGuid].on('click', function(e){
-
-			app.SelectHex(this.getAttr('id'));
-		});
-
-		for(i=0; i < 6; i++)
-		{
-			ring1EndX = getXYatArcEnd(ring1StartX, ring1StartY, radiusToFirstRing, -1*i*2*Math.PI/6)[0];
-			ring1EndY = getXYatArcEnd(ring1StartX, ring1StartY, radiusToFirstRing, -1*i*2*Math.PI/6)[1];
-
-			console.log("Ring1 Start (x,y): " + ring1StartX + "," + ring1StartY);
-			console.log("Ring1 hex " + i + " end (x,y): " + ring1EndX + "," + ring1EndY);
-
-			//var hexGuid = app.newGuid();
-			var hexGuid = i + 2;
-
-			var hexPiece = app.nextHexPiece();
-
-			app.ring[hexGuid] = new Kinetic.RegularPolygon({
-				x: ring1EndX,
-				y: ring1EndY,
-				sides: 6,
-				radius: hexRadius,
-				//fill: hexPiece.color,
-				fillPatternImage: hexPiece.image,
-				fillPatternOffset: [-78, 70],
-				hexType: hexPiece.type,
-				stroke: 'black',
-				strokeWidth: 1,
-				id : hexGuid
-			});
-
-			var ring1Text = new Kinetic.Text({
-				x: ring1EndX - 7,
-				y: ring1EndY - 15,
-				text: i + 2,
-				fontSize: 30,
-				fontFamily: 'Calibri',
-				fill: 'red'
-			});
-
-			kineticLayer.add(app.ring[hexGuid]);
+		drawRing1(initialHexId + numHexes, radiusToFirstRing, kineticLayer);
 		
-			radialSweep(ring1EndX, ring1EndY, hexRadius, hexGuid);
-
-			kineticLayer.add(ring1Text);
-
-			app.ring[hexGuid].on('click', function(e){
-
-				app.SelectHex(this.getAttr('id'));
-			});
-		}
-
-		var j;
+		// 6 hexes in ring 1
+		numHexes = numHexes + 6;
 		
-		for(j=0; j < 12; j++)
-		{
-			if (j % 2 == 1){
-				radiusToSecondRing = 3 * hexRadius;
-			}
-			else
-			{
-				radiusToSecondRing = 2 * radiusToFirstRing;	
-			}
-			
-			ring1EndX = getXYatArcEnd(ring1StartX, ring1StartY, radiusToSecondRing, -1*j*2*Math.PI/12)[0];
-			ring1EndY = getXYatArcEnd(ring1StartX, ring1StartY, radiusToSecondRing, -1*j*2*Math.PI/12)[1];
-
-			console.log("Ring1 Start (x,y): " + ring1StartX + "," + ring1StartY);
-			console.log("Ring1 hex " + j + " end (x,y): " + ring1EndX + "," + ring1EndY);
-
-			//var hexGuid = app.newGuid();
-			var hexGuid = j + 8;
-
-			var hexPiece = app.nextHexPiece();
-
-			app.ring[hexGuid] = new Kinetic.RegularPolygon({
-				x: ring1EndX,
-				y: ring1EndY,
-				sides: 6,
-				radius: hexRadius,
-				//fill: hexPiece.color,
-				fillPatternImage: hexPiece.image,
-				fillPatternOffset: [-78, 70],
-				hexType: hexPiece.type,
-				stroke: 'black',
-				strokeWidth: 1,
-				id: hexGuid
-			});
-
-			var ring2Text = new Kinetic.Text({
-				x: ring1EndX - 7,
-				y: ring1EndY - 15,
-				text: j + 8,
-				fontSize: 30,
-				fontFamily: 'Calibri',
-				fill: 'red'
-			});
-
-			kineticLayer.add(app.ring[hexGuid]);
-			
-			radialSweep(ring1EndX, ring1EndY, hexRadius, hexGuid);
-
-			kineticLayer.add(ring2Text);
-
-			app.ring[hexGuid].on('click', function(e){
-
-				app.SelectHex(this.getAttr('id'));
-			});	
-		}
-
-		var radiusToThirdRing;
-		var k;
-		var angle;
-		var primaryAngle = -1*2*Math.PI/6;
-		var ringNumber = 3;
-		var m;
-
-		var angleList = [ringNumber];
-		var radiiList = [ringNumber];
-
-		// Draw outside "ocean" border ring
-		var x;
-		for(x=0; x<1; x++)
-		{
-			var ringN;
-
-			for(ringN =0; ringN<ringNumber; ringN++)
-			{
-				var aLeg = (ringNumber-0.5*ringN)*radiusToFirstRing;
-				var bLeg = (0+1.5*ringN)*hexRadius;
-
-				angleList[ringN] = -1*Math.atan(bLeg/aLeg);
-				radiiList[ringN] =  Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg,2));
-			}
-
-			var primaryPosition;
-		  
-			for(k=0; k <=(ringNumber*6)-1; k++)
-			{
-				primaryPosition = Math.floor(k/ringNumber)*primaryAngle;
-
-				for(m=0; m<ringNumber; m++)
-				{
-					if( k % ringNumber == m)
-					{
-						var aLeg = (ringNumber-0.5*m)*radiusToFirstRing;
-						var bLeg = (0+1.5*m)*hexRadius;
-						
-						//radiusToThirdRing = Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg,2));
-						radiusToThirdRing = radiiList[m];
-						//angle = -1*Math.atan(bLeg/aLeg) + primaryPosition;
-						angle = angleList[m] + primaryPosition;
-					}
-
-					ring1EndX = getXYatArcEnd(ring1StartX, ring1StartY, radiusToThirdRing, angle)[0];
-					ring1EndY = getXYatArcEnd(ring1StartX, ring1StartY, radiusToThirdRing, angle)[1];
-
-					var hexGuid = k + 20;
-
-					var hexPiece = app.nextHexPiece();
-
-					app.ring[hexGuid] = new Kinetic.RegularPolygon({
-					x: ring1EndX,
-					y: ring1EndY,
-					sides: 6,
-					radius: hexRadius,
-					fill: 'cyan',
-					stroke: 'black',
-					strokeWidth: 1,
-					id: hexGuid
-					});
-					
-					kineticLayer.add(app.ring[hexGuid]);
-				}
-			}
-				  
-			ringNumber++;
-		}
+		drawRing2(initialHexId + numHexes, radiusToFirstRing, kineticLayer);
+		
+		// 12 hexes in ring 2
+		numHexes = numHexes + 12;
+		
+		drawOcean(initialHexId + numHexes, radiusToFirstRing, kineticLayer);
 	  
 		/*
 		//IDEA! Should develop board as a collection of hex-center points, and unique list of vertices, when building the vertices (6 around each center point), can have a unique list of vertices...only add to the unique list if not there, if vertex "collides" with existing vertex (could use a box region for collision detection) then don't add new vertex, but rather add the hex-center point as an adjacency, and add the "previous" vertex as adjacency as well (even after collision, keep sweeping around all 6 vertices of the center-point...to make sure everything gets updated if necessary). In this way, a unique list of vertices will be build along with information regarding adjacent hexes and vertices.
@@ -534,19 +339,181 @@ var ViewInitializer = (function() {
 		app.Stage.add(kineticLayer);
 		kineticLayer.draw();
 
-		for(var x = 1; x <= app.IntersectionMap.length; x++)
+		// Print out hex-types adjacent to each intersection (in a natural/logical order)
+		app.printManMappedLogicalOrderIntersectToHexTypes();
+	};
+	
+	var drawRing0 = function(initialHexId, kineticLayer) {
+	
+		var radiusToRing = 0;
+		var ringIndex = 0;
+		var numHexesInRing = 1;
+		
+		buildBoardHex(initialHexId, radiusToRing, ringIndex, numHexesInRing, kineticLayer);
+
+	};
+	
+	var drawRing1 = function(hexIdStart, radiusToFirstRing, kineticLayer) {
+	
+		var arcEndX;
+		var arcEndY;
+		
+		var hexX = app.GameBoardCenterX;
+		var hexY = app.GameBoardCenterY;
+		
+		var radiusToRing = radiusToFirstRing;
+		
+		var numHexesInRing = 6;
+		
+		var i;
+		
+		for(i=0; i < numHexesInRing; i++)
 		{
-			console.log("Intersection position " + x + ":");
-
-			for(var index = 0; index < app.IntersectionMap[x-1].length; index++)
-			{
-				//alert(app.ring[index].getAttr('id'));
-				var ringIndex = app.IntersectionMap[x-1][index];
-				//alert(app.ring[ringIndex].getAttr('id'));
-
-				console.log("\t" + app.ring[ringIndex].getAttr('hexType'));
-			}
+			var hexId = i + hexIdStart;
+			
+			buildBoardHex(hexId, radiusToRing, i, numHexesInRing, kineticLayer);
 		}
+	};
+	
+	var drawRing2 = function(hexIdStart, radiusToFirstRing, kineticLayer) {
+	
+		var arcEndX;
+		var arcEndY;
+		
+		var i;
+		
+		var numHexesInRing = 12;
+		
+		for(i=0; i < numHexesInRing; i++)
+		{
+			if (i % 2 == 1){
+				radiusToSecondRing = 3 * app.GameBoardHexRadius;
+			}
+			else
+			{
+				radiusToSecondRing = 2 * radiusToFirstRing;	
+			}
+			
+			var radiusToRing = radiusToSecondRing;
+			var hexId = i + hexIdStart;
+			
+			buildBoardHex(hexId, radiusToRing, i, numHexesInRing, kineticLayer);
+		}
+	};
+	
+	var buildBoardHex = function(hexId, radiusToRing, ringIndex, numHexesInRing, kineticLayer) {
+
+		var arcEndX = getXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToRing, -1*ringIndex*2*Math.PI/numHexesInRing)[0];
+		var arcEndY = getXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToRing, -1*ringIndex*2*Math.PI/numHexesInRing)[1];
+
+		console.log("Ring1 Start (x,y): " + app.GameBoardCenterX + "," + app.GameBoardCenterY);
+		console.log("Ring1 hex " + ringIndex + " end (x,y): " + arcEndX + "," + arcEndY);
+
+		var hexPiece = app.nextHexPiece();
+
+		app.ring[hexId] = new Kinetic.RegularPolygon({
+			x: arcEndX,
+			y: arcEndY,
+			sides: 6,
+			radius: app.GameBoardHexRadius,
+			//fill: hexPiece.color,
+			fillPatternImage: hexPiece.image,
+			fillPatternOffset: [-78, 70],
+			hexType: hexPiece.type,
+			stroke: 'black',
+			strokeWidth: 1,
+			id: hexId
+		});
+
+		var hexText = new Kinetic.Text({
+			x: arcEndX - 7,
+			y: arcEndY - 15,
+			text: hexId,
+			fontSize: 30,
+			fontFamily: 'Calibri',
+			fill: 'red'
+		});
+
+		kineticLayer.add(app.ring[hexId]);
+		
+		radialSweep(arcEndX, arcEndY, app.GameBoardHexRadius, hexId);
+
+		kineticLayer.add(hexText);
+
+		app.bindHexClick(hexId);
+	};
+	
+	var drawOcean = function(hexIdStart, radiusToFirstRing, kineticLayer) {
+		
+		var radiusToThirdRing;
+		var k;
+		var angle;
+		var primaryAngle = -1*2*Math.PI/6;
+		var ringNumber = 3;
+		var m;
+
+		var angleList = [ringNumber];
+		var radiiList = [ringNumber];
+
+		// Draw outside "ocean" border ring
+		var x;
+		for(x=0; x<1; x++)
+		{
+			var ringN;
+
+			for(ringN =0; ringN<ringNumber; ringN++)
+			{
+				var aLeg = (ringNumber-0.5*ringN)*radiusToFirstRing;
+				var bLeg = (0+1.5*ringN)*app.GameBoardHexRadius;
+
+				angleList[ringN] = -1*Math.atan(bLeg/aLeg);
+				radiiList[ringN] =  Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg,2));
+			}
+
+			var primaryPosition;
+		  
+			for(k=0; k <=(ringNumber*6)-1; k++)
+			{
+				primaryPosition = Math.floor(k/ringNumber)*primaryAngle;
+
+				for(m=0; m<ringNumber; m++)
+				{
+					if( k % ringNumber == m)
+					{
+						var aLeg = (ringNumber-0.5*m)*radiusToFirstRing;
+						var bLeg = (0+1.5*m)*app.GameBoardHexRadius;
+						
+						//radiusToThirdRing = Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg,2));
+						radiusToThirdRing = radiiList[m];
+						//angle = -1*Math.atan(bLeg/aLeg) + primaryPosition;
+						angle = angleList[m] + primaryPosition;
+					}
+
+					ring1EndX = getXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToThirdRing, angle)[0];
+					ring1EndY = getXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToThirdRing, angle)[1];
+
+					var hexGuid = k + hexIdStart;
+
+					var hexPiece = app.nextHexPiece();
+
+					app.ring[hexGuid] = new Kinetic.RegularPolygon({
+					x: ring1EndX,
+					y: ring1EndY,
+					sides: 6,
+					radius: app.GameBoardHexRadius,
+					fill: 'cyan',
+					stroke: 'black',
+					strokeWidth: 1,
+					id: hexGuid
+					});
+					
+					kineticLayer.add(app.ring[hexGuid]);
+				}
+			}
+				  
+			ringNumber++;
+		}
+
 	};
 	
 	return { init: init };

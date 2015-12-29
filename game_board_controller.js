@@ -10,6 +10,14 @@ app.bindRoadCenterClick = function(roadCenterId) {
 	});
 };
 
+app.bindHexClick = function(hexId) {
+	
+	app.ring[hexId].on('click', function(e){
+
+		app.SelectHex(this.getAttr('id'));
+	});
+};
+
 app.bindIntersectClick = function(intersectionId) {
 	
 	app.vertices[intersectionId].on('click', function(e){
