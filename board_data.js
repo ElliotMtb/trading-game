@@ -203,6 +203,79 @@ app.desertPiece = function(){
 	this.image = app.desertImage;
 };
 
+// Num Pieces (definitions)
+app.NumPiece = function(value, color, probability, numDots, order){
+	this.value = value;
+	this.color = color;
+	this.probability = probability;
+	this.probDots = numDots;
+	this.order = order;
+};
+
+app.createTwoPiece = function(order){
+	return new app.NumPiece(2, 'black', 0.03, 1, order);
+};
+
+app.createTwelvePiece = function(order){
+	return new app.NumPiece(12, 'black', 0.03, 1, order);
+};
+	
+app.createThreePiece = function(order) {
+	return new app.NumPiece(3, 'black', 0.06, 2, order);
+};
+
+app.createElevenPiece = function(order) {
+	return new app.NumPiece(11, 'black', 0.06, 2, order);
+};
+
+app.createFourPiece = function(order) {
+	return new app.NumPiece(4, 'black', 0.08, 3, order);
+};
+
+app.createTenPiece = function(order) {
+	return new app.NumPiece(10, 'black', 0.08, 3, order);
+};
+
+app.createFivePiece = function(order) {
+	return new app.NumPiece(5, 'black', 0.11, 4, order);
+};
+
+app.createNinePiece = function(order) {
+	return new app.NumPiece(9, 'black', 0.11, 4, order);
+};
+
+app.createSixPiece = function(order) {
+	return new app.NumPiece(6, 'red', 0.14, 5, order);
+};
+
+app.createEightPiece = function(order) {
+	return new app.NumPiece(8, 'red', 0.14, 5, order);
+};
+
+app.createZeroPiece = function() {
+	return new app.NumPiece(0, null, null, null);
+};
+
+app.NumPieces = [	app.createTwoPiece('B'),
+					app.createTwelvePiece('H'),
+					app.createThreePiece('D'),
+					app.createThreePiece('Q'),
+					app.createElevenPiece('I'),
+					app.createElevenPiece('R'),
+					app.createFourPiece('J'),
+					app.createFourPiece('N'),
+					app.createTenPiece('F'),
+					app.createTenPiece('L'),
+					app.createFivePiece('A'),
+					app.createFivePiece('O'),
+					app.createNinePiece('G'),
+					app.createNinePiece('M'),
+					app.createSixPiece('C'),
+					app.createSixPiece('P'),
+					app.createEightPiece('E'),
+					app.createEightPiece('K')
+				];
+
 app.HexPieces = [	new app.rockPiece(),
 					new app.rockPiece(),
 					new app.rockPiece(),

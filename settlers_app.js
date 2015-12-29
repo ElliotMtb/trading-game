@@ -26,12 +26,32 @@ app.nextHexPiece = function(){
 	app.HexPieces.splice(indexToTake,1);
 
 	return piece;
-
 };
 
+app.nextNumPiece = function() {
+	
+	app.NumPieces = app.NumPieces.sort(function(a,b){return a.order>b.order});
+	
+	var piece = app.NumPieces.pop();
+
+	return piece;
+};
+
+app.NextNumPieceRandom = function() {
+	
+	var indexToTake = Math.floor((Math.random() * app.NumPieces.length));
+	
+	var piece = app.NumPieces[indexToTake];
+
+	app.NumPieces.splice(indexToTake,1);
+
+	return piece;
+};
 
 app.ring = {};
 app.ringText = {};
+app.hexNumbers = {};
+app.hexNumbersText = {};
 
 app.vertices = [];
 app.verticesText = [];
