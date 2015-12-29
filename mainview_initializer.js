@@ -426,12 +426,12 @@ var ViewInitializer = (function() {
 		});
 
 		app.ringText[hexId] = new Kinetic.Text({
-			x: arcEndX - 7,
-			y: arcEndY - 15,
+			x: arcEndX - 0,
+			y: arcEndY + 0,
 			text: hexId,
-			fontSize: 30,
+			fontSize: 25,
 			fontFamily: 'Calibri',
-			fill: 'red',
+			fill: 'blue',
 		});
 
 		app.ringText[hexId].hide();
