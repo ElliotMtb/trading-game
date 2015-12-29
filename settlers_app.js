@@ -31,6 +31,7 @@ app.nextHexPiece = function(){
 
 
 app.ring = {};
+app.ringText = {};
 
 app.vertices = [];
 app.verticesText = [];

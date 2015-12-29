@@ -91,6 +91,7 @@
 				<div id="game-mode">
 					<button id="toggleIntersectSelectMode">Toggle Select Mode</button>
 					<button id="toggleRoadSelectMode">Toggle Select Road</button>
+					<button id="toggleHexSelectMode">Toggle Select Hex</button>
 				</div>
 			</div>
 			<div class="spa-shell-chat"></div>
@@ -131,35 +132,19 @@
 		$(document).ready(function(){
 			app.initModule();
 			
-			var toggleVisibilityForArray = function(items) {
-				
-				var i;
-				for (i=0; i < items.length; i++)
-				{
-					var intersection = items[i];
-					
-					if (intersection.isVisible())
-					{
-						intersection.hide();
-					}
-					else
-					{
-						intersection.show();
-					}
-				}
-				
-				app.kineticLayer.draw();
-			};
-			
 			$("#toggleIntersectSelectMode").on("click", function() {
 			
-				toggleVisibilityForArray(app.vertices);
-				toggleVisibilityForArray(app.verticesText);
+				app.ToggleIntersectSelectMode();
 			});
 			
 			$("#toggleRoadSelectMode").on("click", function() {
 				
-				toggleVisibilityForArray(app.roadCenterPoints);
+				app.ToggleRoadSelectMode();
+			});
+			
+			$("#toggleHexSelectMode").on("click", function() {
+			
+				app.ToggleHexSelectMode();
 			});
 		});
 	</script>

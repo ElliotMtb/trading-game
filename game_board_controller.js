@@ -1,3 +1,96 @@
+app.toggleVisibilityForArray = function(items) {
+				
+	var i;
+	for (i=0; i < items.length; i++)
+	{
+		var item = items[i];
+		
+		app.toggleKineticJSVisible(item)
+	}
+	
+	app.kineticLayer.draw();
+};
+
+app.toggleVisibilityForObject = function(kineticJSObject) {
+	
+	for (var item in kineticJSObject)
+	{
+		var itemToToggle = kineticJSObject[item];
+		
+		app.toggleKineticJSVisible(itemToToggle);
+	}
+	
+	app.kineticLayer.draw();
+};
+
+app.toggleKineticJSVisible = function(item) {
+	
+	if (item.isVisible())
+	{
+		item.hide();
+	}
+	else
+	{
+		item.show();
+	}
+};
+	
+app.ToggleIntersectSelectMode = function() {
+	
+	app.toggleVisibilityForArray(app.vertices);
+	app.toggleVisibilityForArray(app.verticesText);
+}
+
+app.ToggleRoadSelectMode = function() {
+	
+	app.toggleVisibilityForArray(app.roadCenterPoints);
+}
+
+app.ToggleHexSelectMode = function() {
+	
+	app.toggleVisibilityForObject(app.ringText)
+	
+	var bindOn = function(hex) {
+		app.bindHexClick(hex.getAttr("id"));
+	};
+	
+	var bindOff = function(hex) {
+		hex.off("click");
+	};
+	
+	var bindClick = function(binder) {
+		
+		// Deselect selected hex
+		// Unbind all hex clicks
+		for (var prop in app.ring) {
+			
+			var hex = app.ring[prop];
+			var hexId = hex.getAttr('id');
+			
+			if (hex instanceof Kinetic.RegularPolygon) {
+				
+				binder(hex);
+				
+				if (app.SelectedHex === hexId) {
+					
+					app.toggleSelectedHex(hexId);
+				}
+			}
+		}
+	};
+	
+	if (app.HexSelectMode)
+	{
+		bindClick(bindOff);
+		app.HexSelectMode = false;
+	}
+	else
+	{
+		bindClick(bindOn);
+		app.HexSelectMode = true;
+	}	
+};
+
 app.bindRoadCenterClick = function(roadCenterId) {
 	
 	app.roadCenterPoints[roadCenterId].on('click', function(e){

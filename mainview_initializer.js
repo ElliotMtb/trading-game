@@ -425,22 +425,22 @@ var ViewInitializer = (function() {
 			id: hexId
 		});
 
-		var hexText = new Kinetic.Text({
+		app.ringText[hexId] = new Kinetic.Text({
 			x: arcEndX - 7,
 			y: arcEndY - 15,
 			text: hexId,
 			fontSize: 30,
 			fontFamily: 'Calibri',
-			fill: 'red'
+			fill: 'red',
 		});
 
+		app.ringText[hexId].hide();
+		
 		kineticLayer.add(app.ring[hexId]);
 		
 		radialSweep(arcEndX, arcEndY, app.GameBoardHexRadius, hexId);
 
-		kineticLayer.add(hexText);
-
-		app.bindHexClick(hexId);
+		kineticLayer.add(app.ringText[hexId]);
 	};
 	
 	var drawOcean = function(hexIdStart, radiusToFirstRing, kineticLayer) {
