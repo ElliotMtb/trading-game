@@ -28,7 +28,9 @@ app.nextHexPiece = function(){
 	return piece;
 };
 
-app.nextNumPiece = function() {
+app.config = {};
+
+app.NextNumPieceOrdered = function() {
 	
 	app.NumPieces = app.NumPieces.sort(function(a,b){return a.order>b.order});
 	
@@ -47,6 +49,27 @@ app.NextNumPieceRandom = function() {
 
 	return piece;
 };
+
+app.ToggleNumTokenPullOrder = function() {
+	
+	if (app.nextNumPiece === app.NextNumPieceRandom)
+	{
+		app.SetNumPiecePullOrder(app.NextNumPieceOrdered);
+	}
+	else
+	{
+		app.SetNumPiecePullOrder(app.NextNumPieceRandom);
+	}
+}
+app.SetNumPiecePullOrder = function(method) {
+	
+	app.nextNumPiece = method;
+};
+
+// Uncomment to pull randomly
+//app.SetNumPiecePullOrder(app.NextNumPieceRandom);
+// Default to pulling in order
+app.SetNumPiecePullOrder(app.NextNumPieceOrdered);
 
 app.ring = {};
 app.ringText = {};
