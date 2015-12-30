@@ -93,9 +93,7 @@ var ViewInitializer = (function() {
 			roadY: roadYCenter
 		});
 		
-		//var road = makeRoad(roadXCenter, roadYCenter, roadLength, "blue", theta);
-		
-		//app.roads.push(road);
+		app.roadCenterPoints[roadCenterId].hide();
 		
 		app.bindRoadCenterClick(roadCenterId);
 	};
@@ -162,6 +160,8 @@ var ViewInitializer = (function() {
 			id: intersectionId
 		});
 		
+		app.vertices[intersectionId].hide();
+		
 		app.verticesText[intersectionId] = new Kinetic.Text({
 			x: vertexX + 10,
 			y: vertexY,
@@ -170,6 +170,8 @@ var ViewInitializer = (function() {
 			fontFamily: 'Calibri',
 			fill: 'red'
 		});
+		
+		app.verticesText[intersectionId].hide();
 		
 		createIntersection(intersectionId, vertexX, vertexY);
 		
