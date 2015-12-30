@@ -114,6 +114,14 @@
 				<button class="addResource" value="rock">add rock</button>
 				<button class="addResource" value="sheep">add sheep</button>
 				<br />
+				<fieldset>
+				<legend>Color: </legend>
+				<input class="selectColor" name="player-<%- name%>-Color" type="radio" value="red" <%= color=='red' ? 'checked' : ''%>>Red</input>
+				<input class="selectColor" name="player-<%- name%>-Color" type="radio" value="blue" <%= color=='blue' ? 'checked' : ''%>>Blue</input>
+				<input class="selectColor" name="player-<%- name%>-Color" type="radio" value="green" <%= color=='green' ? 'checked' : ''%>>Green</input>
+				<input class="selectColor" name="player-<%- name%>-Color" type="radio" value="white" <%= color=='white' ? 'checked' : ''%>>White</input>
+				</fieldset>
+				<br />
 				<br />
 			</div>
 		</script>  

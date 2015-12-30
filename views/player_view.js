@@ -19,7 +19,8 @@ var PlayerView = (function() {
 				'keypress .edit' : 'updateOnEnter',
 				'click .destroy': 'destroy',
 				'click .addPoint': 'addPoint',
-				'click .addResource': 'addResource'
+				'click .addResource': 'addResource',
+				'click .selectColor': 'setColor'
 			},
 			updateOnEnter: function(e){
 				if(e.which == 13){
@@ -36,6 +37,9 @@ var PlayerView = (function() {
 			addResource: function(e){
 				
 				this.model.addResource($(e.target).attr("value"));
+			},
+			setColor: function(e){
+				this.model.setColor($(e.target).attr("value"));
 			}
 			
 		});
