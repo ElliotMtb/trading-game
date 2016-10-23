@@ -1,5 +1,7 @@
 var app = app || {};
 
+var piecesBuilder = new app.Pieces.PiecesBuilder();
+
 app.toggleVisibilityForArray = function(items) {
 				
 	var i;
@@ -98,7 +100,7 @@ app.bindRoadCenterClick = function(roadCenterId) {
 	app.roadCenterPoints[roadCenterId].on('click', function(e){
 		
 		// TODO: Use "global" road length
-		var road = makeRoad(this.attrs.roadX, this.attrs.roadY, 20, "blue", this.attrs.angle);
+		var road = piecesBuilder.MakeRoad(this.attrs.roadX, this.attrs.roadY, 20, "blue", this.attrs.angle);
 		
 		app.kineticLayer.add(road);
 		app.kineticLayer.draw();
@@ -129,7 +131,7 @@ app.bindIntersectClick = function(intersectionId) {
 		});
 		
 		settlement.on("click", function() {
-			makeSettlement(intersectX, intersectY, 10, 'red', app.kineticLayer);
+			piecesBuilder.MakeSettlement(intersectX, intersectY, 10, 'red', app.kineticLayer);
 			app.kineticLayer.draw();
 		});
 		
@@ -139,7 +141,7 @@ app.bindIntersectClick = function(intersectionId) {
 		});
 		
 		city.on("click", function() {
-			makeCity(intersectX, intersectY, 10, 'red', app.kineticLayer);
+			piecesBuilder.MakeCity(intersectX, intersectY, 10, 'red', app.kineticLayer);
 			app.kineticLayer.draw();
 		});
 		
