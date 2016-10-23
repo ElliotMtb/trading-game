@@ -1,3 +1,5 @@
+var app = app || {};
+
 app.toggleVisibilityForArray = function(items) {
 				
 	var i;
