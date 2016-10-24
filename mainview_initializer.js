@@ -367,12 +367,6 @@ var ViewInitializer = (function() {
 	
 	var drawRing1 = function(hexIdStart, radiusToFirstRing, kineticLayer) {
 	
-		var arcEndX;
-		var arcEndY;
-		
-		var hexX = app.GameBoardCenterX;
-		var hexY = app.GameBoardCenterY;
-		
 		var radiusToRing = radiusToFirstRing;
 		
 		var numHexesInRing = 6;
@@ -389,9 +383,6 @@ var ViewInitializer = (function() {
 	
 	var drawRing2 = function(hexIdStart, radiusToFirstRing, kineticLayer) {
 	
-		var arcEndX;
-		var arcEndY;
-		
 		var i;
 		
 		var numHexesInRing = 12;
