@@ -64,14 +64,34 @@ var ViewInitializer = (function() {
 		app.printManMappedLogicalOrderIntersectToHexTypes();
 	};
 	
+	var placeNextHex = function(hexId, radiusToRing, ringIndex, numHexesInRing, kineticLayer) {
+
+		var arcEndXYPair = app.Utility.GetXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToRing, -1*ringIndex*2*Math.PI/numHexesInRing);
+
+		var arcEndX = arcEndXYPair[0];
+		var arcEndY = arcEndXYPair[1];
+
+		console.log("Ring1 Start (x,y): " + app.GameBoardCenterX + "," + app.GameBoardCenterY);
+		console.log("Ring1 hex " + ringIndex + " end (x,y): " + arcEndX + "," + arcEndY);
+
+		var hexBuilder = new app.HexBuilder.HexBuilder();
+
+		// Build next hex
+		hexBuilder.BuildHex(hexId, arcEndX, arcEndY, radiusToRing, ringIndex, numHexesInRing, kineticLayer);
+
+		// Connect new intersections
+		var intersectBuilder = new app.IntersectionBuilder.IntersectionBuilder();
+
+		intersectBuilder.RadialSweep(arcEndX, arcEndY, app.GameBoardHexRadius, hexId);
+	}
+
 	var drawRing0 = function(initialHexId, kineticLayer) {
 	
 		var radiusToRing = 0;
 		var ringIndex = 0;
 		var numHexesInRing = 1;
 		
-		buildBoardHex(initialHexId, radiusToRing, ringIndex, numHexesInRing, kineticLayer);
-
+		placeNextHex(initialHexId, radiusToRing, ringIndex, numHexesInRing, kineticLayer);
 	};
 	
 	var drawRing1 = function(hexIdStart, radiusToFirstRing, kineticLayer) {
@@ -86,7 +106,7 @@ var ViewInitializer = (function() {
 		{
 			var hexId = i + hexIdStart;
 			
-			buildBoardHex(hexId, radiusToRing, i, numHexesInRing, kineticLayer);
+			placeNextHex(hexId, radiusToRing, i, numHexesInRing, kineticLayer);
 		}
 	};
 	
@@ -109,98 +129,8 @@ var ViewInitializer = (function() {
 			var radiusToRing = radiusToSecondRing;
 			var hexId = i + hexIdStart;
 			
-			buildBoardHex(hexId, radiusToRing, i, numHexesInRing, kineticLayer);
+			placeNextHex(hexId, radiusToRing, i, numHexesInRing, kineticLayer);
 		}
-	};
-	
-	var buildBoardHex = function(hexId, radiusToRing, ringIndex, numHexesInRing, kineticLayer) {
-
-		var arcEndXYPair = app.Utility.GetXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToRing, -1*ringIndex*2*Math.PI/numHexesInRing);
-
-		var arcEndX = arcEndXYPair[0];
-		var arcEndY = arcEndXYPair[1];
-
-		console.log("Ring1 Start (x,y): " + app.GameBoardCenterX + "," + app.GameBoardCenterY);
-		console.log("Ring1 hex " + ringIndex + " end (x,y): " + arcEndX + "," + arcEndY);
-
-		// TODO: factor-out/paramaterize global call
-		var hexPiece = app.nextHexPiece();
-		
-		var numPiece;
-		
-		if (hexPiece.type == "desert")
-		{
-			numPiece = app.createZeroPiece();
-			createTheHex();
-		}
-		else
-		{
-			numPiece = app.nextNumPiece();
-			createTheHex();
-			createTheNumber();
-		}
-		
-		function createTheHex() {
-			
-			app.ring[hexId] = new Kinetic.RegularPolygon({
-				x: arcEndX,
-				y: arcEndY,
-				sides: 6,
-				radius: app.GameBoardHexRadius,
-				//fill: hexPiece.color,
-				fillPatternImage: hexPiece.image,
-				fillPatternOffset: [-78, 70],
-				hexType: hexPiece.type,
-				hexNumber: numPiece.value,
-				stroke: 'black',
-				strokeWidth: 1,
-				id: hexId
-			});
-			
-			app.ringText[hexId] = new Kinetic.Text({
-				x: arcEndX - 12,
-				y: arcEndY + 14,
-				text: hexId,
-				fontSize: 25,
-				fontFamily: 'Calibri',
-				fill: 'blue',
-			});
-
-			app.ringText[hexId].hide();
-			
-			kineticLayer.add(app.ring[hexId]);
-			kineticLayer.add(app.ringText[hexId]);
-		}
-
-		function createTheNumber() {
-			
-			app.hexNumbers[hexId] = new Kinetic.Circle({
-				x: arcEndX,
-				y: arcEndY,
-				radius: 15,
-				fill: '#EAE0C8', // Pearl
-				stroke: 'black',
-				strokeWidth: 1,
-				id: hexId
-			});
-			
-			app.hexNumbersText[hexId] = new Kinetic.Text({
-				x: arcEndX - 7,
-				y: arcEndY - 11,
-				text: numPiece.value,
-				fontSize: 20,
-				fontFamily: 'Calibri',
-				fill: numPiece.color,
-			});
-			
-			
-			kineticLayer.add(app.hexNumbers[hexId]);
-			kineticLayer.add(app.hexNumbersText[hexId]);	
-		}
-		
-		var intersectBuilder = new app.IntersectionBuilder.IntersectionBuilder();
-
-		intersectBuilder.RadialSweep(arcEndX, arcEndY, app.GameBoardHexRadius, hexId);
 	};
 	
 	var drawOcean = function(hexIdStart, radiusToFirstRing, kineticLayer) {
