@@ -1,260 +1,300 @@
 var app = app || {};
 
-var piecesBuilder = new app.Pieces.PiecesBuilder();
+app.GameBoardController = (function() {
 
-app.toggleVisibilityForArray = function(items) {
-				
-	var i;
-	for (i=0; i < items.length; i++)
-	{
-		var item = items[i];
-		
-		app.toggleKineticJSVisible(item)
-	}
+	// These are assentially "static" variables
+	var piecesBuilder = new app.Pieces.PiecesBuilder();
 	
-	app.kineticLayer.draw();
-};
+	var selectedHex = "";
+	var selectedIntersection = "";
 
-app.toggleVisibilityForObject = function(kineticJSObject) {
-	
-	for (var item in kineticJSObject)
-	{
-		var itemToToggle = kineticJSObject[item];
-		
-		app.toggleKineticJSVisible(itemToToggle);
-	}
-	
-	app.kineticLayer.draw();
-};
+	function Controller() {}
 
-app.toggleKineticJSVisible = function(item) {
-	
-	if (item.isVisible())
-	{
-		item.hide();
-	}
-	else
-	{
-		item.show();
-	}
-};
-	
-app.ToggleIntersectSelectMode = function() {
-	
-	app.toggleVisibilityForArray(app.vertices);
-	app.toggleVisibilityForArray(app.verticesText);
-}
+	function Controller_BindSelectionTogglers() {
 
-app.ToggleRoadSelectMode = function() {
-	
-	app.toggleVisibilityForArray(app.roadCenterPoints);
-}
+		var that = this;
 
-app.ToggleHexSelectMode = function() {
-	
-	app.toggleVisibilityForObject(app.ringText)
-	
-	var bindOn = function(hex) {
-		app.bindHexClick(hex.getAttr("id"));
-	};
-	
-	var bindOff = function(hex) {
-		hex.off("click");
-	};
-	
-	var bindClick = function(binder) {
-		
-		// Deselect selected hex
-		// Unbind all hex clicks
-		for (var prop in app.ring) {
+		$("#toggleIntersectSelectMode").on("click", function() {
 			
-			var hex = app.ring[prop];
-			var hexId = hex.getAttr('id');
+			that.ToggleIntersectSelectMode();
+		});
+		
+		$("#toggleRoadSelectMode").on("click", function() {
 			
-			if (hex instanceof Kinetic.RegularPolygon) {
+			that.ToggleRoadSelectMode();
+		});
+		
+		$("#toggleHexSelectMode").on("click", function() {
+		
+			that.ToggleHexSelectMode();
+		});
+	}
+
+	function Controller_ToggleIntersectSelectMode() {
+		
+		toggleVisibilityForArray(app.vertices);
+		toggleVisibilityForArray(app.verticesText);
+	}
+
+
+	function Controller_ToggleRoadSelectMode() {
+		
+		toggleVisibilityForArray(app.roadCenterPoints);
+	}
+
+	function Controller_ToggleHexSelectMode() {
+		
+		toggleVisibilityForObject(app.ringText)
+		
+		var bindOn = function(hex) {
+			bindHexClick(hex.getAttr("id"));
+		};
+		
+		var bindOff = function(hex) {
+			hex.off("click");
+		};
+		
+		var bindClick = function(binder) {
+			
+			// Deselect selected hex
+			// Unbind all hex clicks
+			for (var prop in app.ring) {
 				
-				binder(hex);
+				var hex = app.ring[prop];
+				var hexId = hex.getAttr('id');
 				
-				if (app.SelectedHex === hexId) {
+				if (hex instanceof Kinetic.RegularPolygon) {
 					
-					app.toggleSelectedHex(hexId);
+					binder(hex);
+					
+					if (selectedHex === hexId) {
+						
+						toggleSelectedHex(hexId);
+					}
 				}
+			}
+		};
+		
+		if (app.HexSelectMode)
+		{
+			bindClick(bindOff);
+			app.HexSelectMode = false;
+		}
+		else
+		{
+			bindClick(bindOn);
+			app.HexSelectMode = true;
+		}	
+	};
+
+	function Controller_BindRoadCenterClick(roadCenterId) {
+		
+		app.roadCenterPoints[roadCenterId].on('click', function(e){
+			
+			// TODO: Use "global" road length
+			var road = piecesBuilder.MakeRoad(this.attrs.roadX, this.attrs.roadY, 20, "blue", this.attrs.angle);
+			
+			app.kineticLayer.add(road);
+			app.kineticLayer.draw();
+		});
+	};
+
+	function Controller_BindIntersectClick(intersectionId) {
+		
+		app.vertices[intersectionId].on('click', function(e){
+
+			var intersectId = this.attrs.id;
+			var intersectX = this.attrs.x;
+			var intersectY = this.attrs.y;
+			
+			selectIntersect(intersectId);
+			
+			var settlement = $("<button>", {
+				"class": "settlement-btn",
+				"text": "Settlement"
+			});
+			
+			settlement.on("click", function() {
+				piecesBuilder.MakeSettlement(intersectX, intersectY, 10, 'red', app.kineticLayer);
+				app.kineticLayer.draw();
+			});
+			
+			var city = $("<button>", {
+				"class": "city-btn",
+				"text": "City"
+			});
+			
+			city.on("click", function() {
+				piecesBuilder.MakeCity(intersectX, intersectY, 10, 'red', app.kineticLayer);
+				app.kineticLayer.draw();
+			});
+			
+			$("#selectedIntersect").html("Selected Intersection: <br> Id: " + intersectId + "<br>" +
+				"Adjacent Hexes: " + app.intersectToHexesAdjacency[intersectionId] + "<br>" +
+				"Adjacent Intersections: " + app.intersectToIntersectAdjacency[intersectionId] + "<br>");
+			
+			$("#selectedIntersect").append(settlement, city);
+		
+		});
+	};
+
+	Controller.prototype.BindSelectionTogglers		= Controller_BindSelectionTogglers;
+	Controller.prototype.ToggleIntersectSelectMode 	= Controller_ToggleIntersectSelectMode;
+	Controller.prototype.ToggleRoadSelectMode 		= Controller_ToggleRoadSelectMode;
+	Controller.prototype.ToggleHexSelectMode 		= Controller_ToggleHexSelectMode;
+	Controller.prototype.BindRoadCenterClick 		= Controller_BindRoadCenterClick;
+	Controller.prototype.BindIntersectClick			= Controller_BindIntersectClick;
+
+	function toggleVisibilityForArray(items) {
+					
+		var i;
+		for (i=0; i < items.length; i++)
+		{
+			var item = items[i];
+			
+			toggleKineticJSVisible(item)
+		}
+		
+		app.kineticLayer.draw();
+	};
+
+	function toggleVisibilityForObject(kineticJSObject) {
+		
+		for (var item in kineticJSObject)
+		{
+			var itemToToggle = kineticJSObject[item];
+			
+			toggleKineticJSVisible(itemToToggle);
+		}
+		
+		app.kineticLayer.draw();
+	};
+
+	function toggleKineticJSVisible(item) {
+		
+		if (item.isVisible())
+		{
+			item.hide();
+		}
+		else
+		{
+			item.show();
+		}
+	};
+		
+
+	function bindHexClick(hexId) {
+		
+		app.ring[hexId].on('click', function(e){
+
+			selectHex(this.getAttr('id'));
+		});
+	};
+
+	function selectHex(id){
+
+		if (selectedHex == id)
+		{
+			toggleSelectedHex(id);
+
+		}
+		else
+		{
+			if (selectedHex != "")
+			{
+				deselectHex(selectedHex);
+				toggleSelectedHex(id);
+			}
+			else
+			{
+				toggleSelectedHex(id);
 			}
 		}
 	};
-	
-	if (app.HexSelectMode)
-	{
-		bindClick(bindOff);
-		app.HexSelectMode = false;
-	}
-	else
-	{
-		bindClick(bindOn);
-		app.HexSelectMode = true;
-	}	
-};
 
-app.bindRoadCenterClick = function(roadCenterId) {
-	
-	app.roadCenterPoints[roadCenterId].on('click', function(e){
+	function selectIntersect(id) {
 		
-		// TODO: Use "global" road length
-		var road = piecesBuilder.MakeRoad(this.attrs.roadX, this.attrs.roadY, 20, "blue", this.attrs.angle);
-		
-		app.kineticLayer.add(road);
+		if (selectedIntersection === id)
+		{
+			toggleSelectedIntersection(id);
+		}
+		else
+		{
+			if (selectedIntersection !== "")
+			{
+				deselectIntersection(selectedIntersection);
+				toggleSelectedIntersection(id);
+			}
+			else
+			{
+				toggleSelectedIntersection(id);
+			}
+		}
+	};
+
+	function toggleSelectedHex(id){
+
+		if(app.ring[id].getAttr('selected'))
+		{
+			app.ring[id].setStroke("black");
+			app.ring[id].setStrokeWidth("1");
+			app.ring[id].setAttr('selected', false);
+			selectedHex = "";
+
+		}
+		else
+		{
+			app.ring[id].setStroke("blue");
+			app.ring[id].setStrokeWidth("3");
+			app.ring[id].setAttr('selected', true);
+
+			selectedHex = id;
+		}
+
 		app.kineticLayer.draw();
-	});
-};
+		app.ring[id].draw();
 
-app.bindHexClick = function(hexId) {
-	
-	app.ring[hexId].on('click', function(e){
+	};
 
-		app.SelectHex(this.getAttr('id'));
-	});
-};
+	function toggleSelectedIntersection(id) {
 
-app.bindIntersectClick = function(intersectionId) {
-	
-	app.vertices[intersectionId].on('click', function(e){
-
-		var intersectId = this.attrs.id;
-		var intersectX = this.attrs.x;
-		var intersectY = this.attrs.y;
-		
-		app.SelectIntersect(intersectId);
-		
-		var settlement = $("<button>", {
-			"class": "settlement-btn",
-			"text": "Settlement"
-		});
-		
-		settlement.on("click", function() {
-			piecesBuilder.MakeSettlement(intersectX, intersectY, 10, 'red', app.kineticLayer);
-			app.kineticLayer.draw();
-		});
-		
-		var city = $("<button>", {
-			"class": "city-btn",
-			"text": "City"
-		});
-		
-		city.on("click", function() {
-			piecesBuilder.MakeCity(intersectX, intersectY, 10, 'red', app.kineticLayer);
-			app.kineticLayer.draw();
-		});
-		
-		$("#selectedIntersect").html("Selected Intersection: <br> Id: " + intersectId + "<br>"
-		+ "Adjacent Hexes: " + app.intersectToHexesAdjacency[intersectionId] + "<br>"
-		+ "Adjacent Intersections: " + app.intersectToIntersectAdjacency[intersectionId] + "<br>");
-		
-		$("#selectedIntersect").append(settlement, city);
-	
-	});
-};
-
-app.SelectHex = function(id){
-
-	if (app.SelectedHex == id)
-	{
-		app.toggleSelectedHex(id);
-
-	}
-	else
-	{
-		if (app.SelectedHex != "")
+		if(app.vertices[id].getAttr('selected'))
 		{
-			app.deselectHex(app.SelectedHex);
-			app.toggleSelectedHex(id);
+			app.vertices[id].setStroke("black");
+			app.vertices[id].setStrokeWidth("1");
+			app.vertices[id].setAttr('selected', false);
+			selectedIntersection = "";
+
 		}
 		else
 		{
-			app.toggleSelectedHex(id);
-		}
-	}
-};
+			app.vertices[id].setStroke("blue");
+			app.vertices[id].setStrokeWidth("3");
+			app.vertices[id].setAttr('selected', true);
 
-app.SelectIntersect = function(id) {
-	
-	if (app.SelectedIntersection === id)
-	{
-		app.toggleSelectedIntersection(id);
-	}
-	else
-	{
-		if (app.SelectedIntersection !== "")
-		{
-			app.deselectIntersection(app.SelectedIntersection);
-			app.toggleSelectedIntersection(id);
+			selectedIntersection = id;
 		}
-		else
-		{
-			app.toggleSelectedIntersection(id);
-		}
-	}
-};
 
-app.toggleSelectedHex = function(id){
+		app.kineticLayer.draw();
+		app.vertices[id].draw();
+	};
 
-	if(app.ring[id].getAttr('selected'))
-	{
+	function deselectHex(id) {
 		app.ring[id].setStroke("black");
 		app.ring[id].setStrokeWidth("1");
 		app.ring[id].setAttr('selected', false);
-		app.SelectedHex = "";
+		selectedHex = "";
+	};
 
-	}
-	else
-	{
-		app.ring[id].setStroke("blue");
-		app.ring[id].setStrokeWidth("3");
-		app.ring[id].setAttr('selected', true);
-
-		app.SelectedHex = id;
-	}
-
-	app.kineticLayer.draw();
-	app.ring[id].draw();
-
-};
-
-app.toggleSelectedIntersection = function(id) {
-
-	if(app.vertices[id].getAttr('selected'))
-	{
+	function deselectIntersection(id) {
 		app.vertices[id].setStroke("black");
 		app.vertices[id].setStrokeWidth("1");
 		app.vertices[id].setAttr('selected', false);
-		app.SelectedIntersection = "";
+		selectedIntersection = "";
+	};
 
-	}
-	else
-	{
-		app.vertices[id].setStroke("blue");
-		app.vertices[id].setStrokeWidth("3");
-		app.vertices[id].setAttr('selected', true);
+	return {
+		Controller : Controller
+	};
 
-		app.SelectedIntersection = id;
-	}
-
-	app.kineticLayer.draw();
-	app.vertices[id].draw();
-};
-
-app.deselectHex = function(id){
-	app.ring[id].setStroke("black");
-	app.ring[id].setStrokeWidth("1");
-	app.ring[id].setAttr('selected', false);
-	app.SelectedHex = "";
-};
-
-app.deselectIntersection = function(id) {
-	app.vertices[id].setStroke("black");
-	app.vertices[id].setStrokeWidth("1");
-	app.vertices[id].setAttr('selected', false);
-	app.SelectedIntersection = "";
-};
-
-app.SelectedHex = "";
-app.SelectedIntersection = "";
+})();

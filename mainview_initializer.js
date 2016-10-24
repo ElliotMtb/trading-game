@@ -1,5 +1,11 @@
 var ViewInitializer = (function() {
 	
+	// Factory method
+	function getNewGameBoardController() {
+
+		return new app.GameBoardController.Controller();
+	}
+
 	var distance = function(fromX, fromY, toX, toY) {
 		
 		var aSqr = Math.pow(fromX - toX, 2);
@@ -94,8 +100,10 @@ var ViewInitializer = (function() {
 		});
 		
 		app.roadCenterPoints[roadCenterId].hide();
-		
-		app.bindRoadCenterClick(roadCenterId);
+
+		var gameBoardController = getNewGameBoardController();
+
+		gameBoardController.BindRoadCenterClick(roadCenterId);
 	};
 	
 	updateIntersection = function(idOfCurrentHex, vertexX, vertexY, collisionIndex, lastIntersectionInSweep) {
@@ -202,7 +210,9 @@ var ViewInitializer = (function() {
 			}
 		}
 
-		app.bindIntersectClick(intersectionId);
+		var gameBoardController = getNewGameBoardController();
+
+		gameBoardController.BindIntersectClick(intersectionId);
 		
 		return intersectionId;
 	};
