@@ -4,7 +4,7 @@ app.HexBuilder = (function() {
 
     function HexBuilder() {}
 
-    function HexBuilder_BuildHex(hexId, arcEndX, arcEndY, radiusToRing, ringIndex, numHexesInRing, kineticLayer) {
+    function HexBuilder_BuildHex(hexId, arcEndX, arcEndY, radiusToRing, kineticLayer) {
 
         // TODO: factor-out/paramaterize global call
 		var hexPiece = app.nextHexPiece();

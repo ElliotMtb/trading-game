@@ -5,8 +5,8 @@ var app = (function() {
 		app.kineticLayer = new Kinetic.Layer();
 		app.Stage = new Kinetic.Stage({
 			container: 'gameBoardContainer',
-			width: 600,
-			height: 500
+			width: 800,
+			height: 700
 		});
 
 		app.newGuid = function(){
