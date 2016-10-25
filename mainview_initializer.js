@@ -19,19 +19,18 @@ var ViewInitializer = (function() {
 		// Center hex
 		var numHexes = 1;
 
-		drawRing1(initialHexId + numHexes, radiusToFirstRing, kineticLayer);
+		// TODO: find a way to combine the following 2 calls to drawHexRings(..)
+		// Note: It's mostly ready to go, just need to make make the call agnostic to what type of hexes are being drawn
+		// i.e. the algorithm/method used to build/place the hexes should inherently be selected based on the next hex to
+		// be placed. This could be accomplished if I make an "ocean" type hex and populate a queue with all the regular
+		// hexes at the front of the queue, and put all the ocean hexes at the back of the queue
+		drawHexRings(1, 2, placeNextHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
 		
 		// 6 hexes in ring 1
-		numHexes = numHexes + 6;
-		
-		drawRing2(initialHexId + numHexes, radiusToFirstRing, kineticLayer);
-		// TODO: switch to using a single algorithm (need a little more work on the drawOcean algoritm to make it work properly for regular hexes)
-		//drawOcean(2, 1, placeNextHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
-		
 		// 12 hexes in ring 2
-		numHexes = numHexes + 12;
+		numHexes = numHexes + 6 + 12;
 		
-		drawOcean(3, 1, placeOceanHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
+		drawHexRings(3, 1, placeOceanHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
 	  
 		/*
 		//IDEA! Should develop board as a collection of hex-center points, and unique list of vertices, when building the vertices (6 around each center point), can have a unique list of vertices...only add to the unique list if not there, if vertex "collides" with existing vertex (could use a box region for collision detection) then don't add new vertex, but rather add the hex-center point as an adjacency, and add the "previous" vertex as adjacency as well (even after collision, keep sweeping around all 6 vertices of the center-point...to make sure everything gets updated if necessary). In this way, a unique list of vertices will be build along with information regarding adjacent hexes and vertices.
@@ -81,6 +80,7 @@ var ViewInitializer = (function() {
 		// Connect new intersections
 		var intersectBuilder = new app.IntersectionBuilder.IntersectionBuilder();
 
+		// When placing regular (non-ocean) hexes, need to assemble intersection adjacency info
 		intersectBuilder.RadialSweep(arcEndX, arcEndY, app.GameBoardHexRadius, hexId);
 	}
 
@@ -90,14 +90,14 @@ var ViewInitializer = (function() {
 		ring1EndY = app.Utility.GetXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToRing, angle)[1];
 
 		app.ring[hexId] = new Kinetic.RegularPolygon({
-		x: ring1EndX,
-		y: ring1EndY,
-		sides: 6,
-		radius: app.GameBoardHexRadius,
-		fill: 'cyan',
-		stroke: 'black',
-		strokeWidth: 1,
-		id: hexId
+			x: ring1EndX,
+			y: ring1EndY,
+			sides: 6,
+			radius: app.GameBoardHexRadius,
+			fill: 'cyan',
+			stroke: 'black',
+			strokeWidth: 1,
+			id: hexId
 		});
 		
 		kineticLayer.add(app.ring[hexId]);
@@ -114,53 +114,13 @@ var ViewInitializer = (function() {
 		placeNextHex(initialHexId, radiusToRing, hexAngle, kineticLayer);
 	};
 	
-	var drawRing1 = function(hexIdStart, radiusToFirstRing, kineticLayer) {
-	
-		var numHexesInRing = 6;
-
-		var i;
-		
-		for(i=0; i < numHexesInRing; i++)
-		{
-			var hexId = i + hexIdStart;
-			
-			var hexAngle = -1*i*2*Math.PI/numHexesInRing;
-		
-			placeNextHex(hexId, radiusToFirstRing, hexAngle, kineticLayer);
-		}
-	};
-	
-	var drawRing2 = function(hexIdStart, radiusToFirstRing, kineticLayer) {
-	
-		var i;
-		
-		var numHexesInRing = 12;
-		
-		var radiusToSecondRing;
-
-		for(i=0; i < numHexesInRing; i++)
-		{
-			if (i % 2 == 1){
-				radiusToSecondRing = 3 * app.GameBoardHexRadius;
-			}
-			else
-			{
-				radiusToSecondRing = 2 * radiusToFirstRing;	
-			}
-			
-			var hexId = i + hexIdStart;
-			
-			var hexAngle = -1*i*2*Math.PI/numHexesInRing;
-
-			placeNextHex(hexId, radiusToSecondRing, hexAngle, kineticLayer);
-		}
-	};
-	
-	var drawOcean = function(ringStart, numRingsToDraw, hexTypePlacer, hexIdStart, radiusToFirstRing, kineticLayer) {
+	var drawHexRings = function(ringStart, numRingsToDraw, hexTypePlacer, hexIdStart, radiusToFirstRing, kineticLayer) {
 		
 		var radiusToNthRing;
-		var k;
+		var ringHexOffset;
 		var angle;
+
+		// -60 degrees
 		var primaryAngle = -1*2*Math.PI/6;
 		
 		var ringNumber = ringStart;//3;
@@ -171,43 +131,51 @@ var ViewInitializer = (function() {
 
 		// Draw outside "ocean" border ring
 		var x;
-		for(x=0; x < numRingsToDraw; x++)
+
+		for (x = 0; x < numRingsToDraw; x++)
 		{
 			var ringN;
 
-			for(ringN =0; ringN<ringNumber; ringN++)
-			{
-				var aLeg = (ringNumber-0.5*ringN)*radiusToFirstRing;
-				var bLeg = (0+1.5*ringN)*app.GameBoardHexRadius;
+			var primaryPosition;
+			var numHexesInRing = ringNumber * 6;
+			var numHexesToPlaceEvery60Deg = ringNumber;
 
-				angleList[ringN] = -1*Math.atan(bLeg/aLeg);
-				radiiList[ringN] =  Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg,2));
+			// There are n angles and n radii, where n is the ring number, because there are n hexes that will be places at
+			// each major/primary vector off the center hex i.e. a primary hex is placed in line with each 60 deg vector off
+			// the center hex, and then n-1 additional "filler" hexes.
+			// (e.g. ring number 3 will have 1 primary hex places and 2 "filler hexes")
+			for (ringN = 0; ringN < numHexesToPlaceEvery60Deg; ringN++)
+			{
+				var aLeg = (numHexesToPlaceEvery60Deg - 0.5 * ringN) * radiusToFirstRing;
+				var bLeg = (0 + 1.5 * ringN) * app.GameBoardHexRadius;
+
+				angleList[ringN] = -1 * Math.atan(bLeg / aLeg);
+				radiiList[ringN] =  Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg, 2));
 			}
 
-			var primaryPosition;
-		  
-			for(k=0; k <=(ringNumber*6)-1; k++)
+			for (ringHexOffset = 0; ringHexOffset < numHexesInRing; ringHexOffset++)
 			{
-				primaryPosition = Math.floor(k/ringNumber)*primaryAngle;
+				primaryPosition = Math.floor(ringHexOffset / numHexesToPlaceEvery60Deg) * primaryAngle;
 
-				for(m=0; m<ringNumber; m++)
+				// For each hex to place off of the primary 60 degree vector (there will be n to place),
+				// lookup the precalculated radius and the appropriate angle offset.
+				for (m = 0; m < numHexesToPlaceEvery60Deg; m++)
 				{
-					if( k % ringNumber == m)
+					if (ringHexOffset % numHexesToPlaceEvery60Deg == m)
 					{
-						var aLeg = (ringNumber-0.5*m)*radiusToFirstRing;
-						var bLeg = (0+1.5*m)*app.GameBoardHexRadius;
-						
 						radiusToNthRing = radiiList[m];
 
 						angle = angleList[m] + primaryPosition;
-					}
-					
-					var hexGuid = k + hexIdStart;
 
-					hexTypePlacer(hexGuid, radiusToNthRing, angle, kineticLayer);
-					//placeOceanHex(hexGuid, radiusToNthRing, angle, kineticLayer);
+						var hexGuid = ringHexOffset + hexIdStart;
+
+						hexTypePlacer(hexGuid, radiusToNthRing, angle, kineticLayer);
+					}
 				}
 			}
+
+			// Update the startId for the next ring
+			hexIdStart = hexIdStart + ringHexOffset;
 				  
 			ringNumber++;
 		}

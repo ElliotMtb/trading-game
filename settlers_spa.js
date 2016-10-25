@@ -18,14 +18,15 @@ var app = (function() {
 		};
 
 		app.piecesRemaining = 19;
+
 		app.nextHexPiece = function(){
 
 			var indexToTake = Math.floor((Math.random() * app.HexPieces.length));
+			
 			console.log("piecesRemaining: " + app.HexPieces.length);
 			console.log("index of hex to take: " + indexToTake);
-			var piece = app.HexPieces[indexToTake];
 
-			app.HexPieces.splice(indexToTake,1);
+			var piece = app.HexPieces.splice(indexToTake,1)[0];
 
 			return piece;
 		};
