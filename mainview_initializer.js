@@ -19,8 +19,6 @@ var ViewInitializer = (function() {
 		
 		var numHexes = 1;
 
-		// TODO: There has to be enough hexes defined (to draw from) in order to complete the number of rings specified.
-		// ...do a check to make sure there are enough hexes defined (or perhaps automatically make more ocean hexes if there aren't enough)
 		drawHexRings(1, 3, placeNextHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
 		
 		/*

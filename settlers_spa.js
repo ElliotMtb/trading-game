@@ -44,6 +44,13 @@ var app = (function() {
 
 			var piece = app.HexPieces.splice(0,1)[0];
 
+			// This is useful, because if there are no more pieces prepared in the stack, it
+			// will just return ocean pieces ...to finish out the drawing algorithm
+			if (piece === undefined) {
+
+				return new app.oceanPiece();
+			}
+
 			return piece;
 		};
 
