@@ -14,24 +14,15 @@ var ViewInitializer = (function() {
 		var i;
 		var initialHexId = 1;
 		
+		// Center hex
 		drawRing0(initialHexId, kineticLayer);
 		
-		// Center hex
 		var numHexes = 1;
 
-		// TODO: find a way to combine the following 2 calls to drawHexRings(..)
-		// Note: It's mostly ready to go, just need to make make the call agnostic to what type of hexes are being drawn
-		// i.e. the algorithm/method used to build/place the hexes should inherently be selected based on the next hex to
-		// be placed. This could be accomplished if I make an "ocean" type hex and populate a queue with all the regular
-		// hexes at the front of the queue, and put all the ocean hexes at the back of the queue
-		drawHexRings(1, 2, placeNextHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
+		// TODO: There has to be enough hexes defined (to draw from) in order to complete the number of rings specified.
+		// ...do a check to make sure there are enough hexes defined (or perhaps automatically make more ocean hexes if there aren't enough)
+		drawHexRings(1, 3, placeNextHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
 		
-		// 6 hexes in ring 1
-		// 12 hexes in ring 2
-		numHexes = numHexes + 6 + 12;
-		
-		drawHexRings(3, 1, placeOceanHex, initialHexId + numHexes, radiusToFirstRing, kineticLayer);
-	  
 		/*
 		//IDEA! Should develop board as a collection of hex-center points, and unique list of vertices, when building the vertices (6 around each center point), can have a unique list of vertices...only add to the unique list if not there, if vertex "collides" with existing vertex (could use a box region for collision detection) then don't add new vertex, but rather add the hex-center point as an adjacency, and add the "previous" vertex as adjacency as well (even after collision, keep sweeping around all 6 vertices of the center-point...to make sure everything gets updated if necessary). In this way, a unique list of vertices will be build along with information regarding adjacent hexes and vertices.
 
@@ -74,33 +65,28 @@ var ViewInitializer = (function() {
 
 		var hexBuilder = new app.HexBuilder.HexBuilder();
 
-		// Build next hex
-		hexBuilder.BuildHex(hexId, arcEndX, arcEndY, radiusToRing, kineticLayer);
-
-		// Connect new intersections
-		var intersectBuilder = new app.IntersectionBuilder.IntersectionBuilder();
-
-		// When placing regular (non-ocean) hexes, need to assemble intersection adjacency info
-		intersectBuilder.RadialSweep(arcEndX, arcEndY, app.GameBoardHexRadius, hexId);
-	}
-
-	var placeOceanHex = function(hexId, radiusToRing, angle, kineticLayer) {
-
-		ring1EndX = app.Utility.GetXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToRing, angle)[0];
-		ring1EndY = app.Utility.GetXYatArcEnd(app.GameBoardCenterX, app.GameBoardCenterY, radiusToRing, angle)[1];
-
-		app.ring[hexId] = new Kinetic.RegularPolygon({
-			x: ring1EndX,
-			y: ring1EndY,
-			sides: 6,
-			radius: app.GameBoardHexRadius,
-			fill: 'cyan',
-			stroke: 'black',
-			strokeWidth: 1,
-			id: hexId
-		});
+		// TODO: factor-out/paramaterize global call
+		var hexInfo = app.nextHexPiece();
 		
-		kineticLayer.add(app.ring[hexId]);
+		if (hexInfo === null)
+			throw "Ran out of hexes";
+
+		if (hexInfo.type === "ocean")
+		{
+			// Build next hex
+			hexBuilder.BuildOceanHex(hexId, hexInfo, arcEndX, arcEndY, kineticLayer);
+		}
+		else
+		{
+			// Build next hex
+			hexBuilder.BuildHex(hexId, hexInfo, arcEndX, arcEndY, kineticLayer);
+		
+			// Connect new intersections
+			var intersectBuilder = new app.IntersectionBuilder.IntersectionBuilder();
+
+			// When placing regular (non-ocean) hexes, need to assemble intersection adjacency info
+			intersectBuilder.RadialSweep(arcEndX, arcEndY, app.GameBoardHexRadius, hexId);
+		}
 	}
 
 	var drawRing0 = function(initialHexId, kineticLayer) {

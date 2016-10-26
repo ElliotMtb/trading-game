@@ -17,16 +17,32 @@ var app = (function() {
 			return guid;
 		};
 
-		app.piecesRemaining = 19;
+		function shuffleAndPrepHexes() {
+
+			var numRegularHexes = app.RegularHexPieces.length;
+			var i;
+
+			for (i = 0; i < numRegularHexes; i++) {
+				
+				var indexToTake = Math.floor((Math.random() * app.RegularHexPieces.length));
+
+				console.log("piecesRemaining: " + app.RegularHexPieces.length);
+				console.log("index of regular hex to take: " + indexToTake);
+
+				var piece = app.RegularHexPieces.splice(indexToTake,1)[0];
+
+				app.HexPieces.push(piece);
+			}
+
+			// Put ocean pieces last in list
+			app.HexPieces = app.HexPieces.concat(app.OceanPieces);
+		}
+
+		shuffleAndPrepHexes();
 
 		app.nextHexPiece = function(){
 
-			var indexToTake = Math.floor((Math.random() * app.HexPieces.length));
-			
-			console.log("piecesRemaining: " + app.HexPieces.length);
-			console.log("index of hex to take: " + indexToTake);
-
-			var piece = app.HexPieces.splice(indexToTake,1)[0];
+			var piece = app.HexPieces.splice(0,1)[0];
 
 			return piece;
 		};

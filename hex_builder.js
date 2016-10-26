@@ -4,14 +4,11 @@ app.HexBuilder = (function() {
 
     function HexBuilder() {}
 
-    function HexBuilder_BuildHex(hexId, arcEndX, arcEndY, radiusToRing, kineticLayer) {
+    function HexBuilder_BuildHex(hexId, hexInfo, arcEndX, arcEndY, kineticLayer) {
 
-        // TODO: factor-out/paramaterize global call
-		var hexPiece = app.nextHexPiece();
-		
 		var numPiece;
 		
-		if (hexPiece.type == "desert")
+		if (hexInfo.type == "desert")
 		{
 			numPiece = app.createZeroPiece();
 			createTheHex();
@@ -30,10 +27,10 @@ app.HexBuilder = (function() {
 				y: arcEndY,
 				sides: 6,
 				radius: app.GameBoardHexRadius,
-				//fill: hexPiece.color,
-				fillPatternImage: hexPiece.image,
+				//fill: hexInfo.color,
+				fillPatternImage: hexInfo.image,
 				fillPatternOffset: [-78, 70],
-				hexType: hexPiece.type,
+				hexType: hexInfo.type,
 				hexNumber: numPiece.value,
 				stroke: 'black',
 				strokeWidth: 1,
@@ -81,8 +78,25 @@ app.HexBuilder = (function() {
 		}
     }
 
-    HexBuilder.prototype.BuildHex = HexBuilder_BuildHex;
+	function HexBuilder_BuildOceanHex(hexId, hexInfo, arcEndX, arcEndY, kineticLayer) {
 
+		app.ring[hexId] = new Kinetic.RegularPolygon({
+			x: arcEndX,
+			y: arcEndY,
+			sides: 6,
+			radius: app.GameBoardHexRadius,
+			fill: hexInfo.color,
+			stroke: 'black',
+			strokeWidth: 1,
+			id: hexId
+		});
+		
+		kineticLayer.add(app.ring[hexId]);
+	}
+
+    HexBuilder.prototype.BuildHex = HexBuilder_BuildHex;
+	HexBuilder.prototype.BuildOceanHex = HexBuilder_BuildOceanHex;
+	
     return {
         HexBuilder : HexBuilder
     };

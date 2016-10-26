@@ -152,7 +152,7 @@ app.rockImage = new Image();
 // right now. Although I could have a check to make sure 
 // that all images are loaded correctly...then if not, use the colors...
 app.rockImage.onload = function(){
-	app.kineticLayer.draw();
+	//app.kineticLayer.draw();
 };
 
 app.rockImage.src = "./images/rock (150x134).jpg";
@@ -203,6 +203,11 @@ app.desertPiece = function(){
 	this.color = '#f8cd8b';
 	this.image = app.desertImage;
 };
+app.oceanPiece = function(){
+	this.type = 'ocean';
+	this.color = 'cyan';
+	this.image = null;
+}
 
 // Num Pieces (definitions)
 app.NumPiece = function(value, color, probability, numDots, order){
@@ -277,23 +282,35 @@ app.NumPieces = [	app.createTwoPiece('B'),
 					app.createEightPiece('K')
 				];
 
-app.HexPieces = [	new app.rockPiece(),
-					new app.rockPiece(),
-					new app.rockPiece(),
-					new app.brickPiece(),
-					new app.brickPiece(),
-					new app.brickPiece(),
-					new app.wheatPiece(),
-					new app.wheatPiece(),
-					new app.wheatPiece(),
-					new app.wheatPiece(),
-					new app.sheepPiece(),
-					new app.sheepPiece(),
-					new app.sheepPiece(),
-					new app.sheepPiece(),
-					new app.woodPiece(),
-					new app.woodPiece(),
-					new app.woodPiece(),
-					new app.woodPiece(),
-					new app.desertPiece()];
-				
+app.HexPieces = [];
+
+app.RegularHexPieces = [
+	new app.rockPiece(),
+	new app.rockPiece(),
+	new app.rockPiece(),
+	new app.brickPiece(),
+	new app.brickPiece(),
+	new app.brickPiece(),
+	new app.wheatPiece(),
+	new app.wheatPiece(),
+	new app.wheatPiece(),
+	new app.wheatPiece(),
+	new app.sheepPiece(),
+	new app.sheepPiece(),
+	new app.sheepPiece(),
+	new app.sheepPiece(),
+	new app.woodPiece(),
+	new app.woodPiece(),
+	new app.woodPiece(),
+	new app.woodPiece(),
+	new app.desertPiece()
+];
+
+app.OceanPieces = [];
+
+var oceanCount;
+
+for (oceanCount = 0; oceanCount < 18; oceanCount++)
+{
+	app.OceanPieces.push(new app.oceanPiece());
+}
