@@ -91,55 +91,39 @@ app.BoardBuilder = (function () {
 		// -60 degrees
 		var primaryAngle = -1*2*Math.PI/6;
 		
-		var ringNumber = ringStart;//3;
-		var m;
+		var ringNumber = ringStart;
 
-		var angleList = [];
-		var radiiList = [];
-
-		// Draw outside "ocean" border ring
 		var x;
 
 		for (x = 0; x < numRingsToDraw; x++)
 		{
-			var i;
 
 			var primaryPosition;
 			var numHexesInRing = ringNumber * 6;
 			var numHexesToPlaceEvery60Deg = ringNumber;
 
-			// There are n angles and n radii, where n is the ring number, because there are n hexes that will be places at
-			// each major/primary vector off the center hex i.e. a primary hex is placed in line with each 60 deg vector off
-			// the center hex, and then n-1 additional "filler" hexes.
-			// (e.g. ring number 3 will have 1 primary hex places and 2 "filler hexes")
-			for (i = 0; i < numHexesToPlaceEvery60Deg; i++)
-			{
-				var aLeg = (numHexesToPlaceEvery60Deg - 0.5 * i) * radiusToFirstRing;
-				var bLeg = (0 + 1.5 * i) * app.GameBoardHexRadius;
-
-				angleList[i] = -1 * Math.atan(bLeg / aLeg);
-				radiiList[i] =  Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg, 2));
-			}
-
 			for (ringHexOffset = 0; ringHexOffset < numHexesInRing; ringHexOffset++)
 			{
 				primaryPosition = Math.floor(ringHexOffset / numHexesToPlaceEvery60Deg) * primaryAngle;
 
-				// For each hex to place off of the primary 60 degree vector (there will be n to place),
-				// lookup the precalculated radius and the appropriate angle offset.
-				for (m = 0; m < numHexesToPlaceEvery60Deg; m++)
-				{
-					if (ringHexOffset % numHexesToPlaceEvery60Deg == m)
-					{
-						radiusToNthRing = radiiList[m];
+                // There are n hexes that will be places at
+                // each major/primary vector off the center hex i.e. a primary hex is placed in line with each 60 deg vector off
+                // the center hex, and then n-1 additional "filler" hexes.
+                // (e.g. ring number 3 will have 1 primary hex places and 2 "filler hexes")
+                // Every nth hex in the ring (where n = totalNumHexesInRing/6) will utilize the "true" radius for the ring, and every "filler"
+                // hex will use a lesser offset radius (thus the center points maintain a linear trajectory rather than an arc).
+                var fillerHexOffset = ringHexOffset % numHexesToPlaceEvery60Deg; 
 
-						angle = angleList[m] + primaryPosition;
+                var aLeg = (numHexesToPlaceEvery60Deg - 0.5 * fillerHexOffset) * radiusToFirstRing;
+                var bLeg = (0 + 1.5 * fillerHexOffset) * app.GameBoardHexRadius;
 
-						var hexGuid = ringHexOffset + hexIdStart;
+                radiusToNthRing = Math.sqrt(Math.pow(aLeg, 2) + Math.pow(bLeg, 2));
 
-						placeNextHex(hexGuid, radiusToNthRing, angle, kineticLayer);
-					}
-				}
+                angle = -1 * Math.atan(bLeg / aLeg) + primaryPosition;
+
+                var hexGuid = ringHexOffset + hexIdStart;
+
+                placeNextHex(hexGuid, radiusToNthRing, angle, kineticLayer);
 			}
 
 			// Update the startId for the next ring
@@ -148,9 +132,9 @@ app.BoardBuilder = (function () {
 			ringNumber++;
 		}
 
-	};
+    };
    
-   GameBoardBuilder.prototype.AssembleBoard = GameBoardBuilder_AssembleBoard;
+    GameBoardBuilder.prototype.AssembleBoard = GameBoardBuilder_AssembleBoard;
 
     return {
         GameBoardBuilder : GameBoardBuilder
