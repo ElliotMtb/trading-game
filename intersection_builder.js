@@ -12,30 +12,26 @@ app.IntersectionBuilder = (function() {
 		var vertexY;
 		var i;
 	
+		var xyPair;
+
 		var lastIntersectionInSweep;
 		
 		// Forward sweep
 		for (i= 0; i < 7; i++)
 		{
-			vertexX = app.Utility.GetXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[0];
-			vertexY = app.Utility.GetXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[1];
+			xyPair = app.Utility.GetXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12));
+			vertexX = xyPair[0];
+			vertexY = xyPair[1];
 		
 			lastIntersectionInSweep = updateTheAdjacencies(idOfCurrentHex, vertexX, vertexY, lastIntersectionInSweep);
-		// Perhaps should delay adding until the end to show on top of everything else
-		//app.kineticLayer.add(app.vertices[intersectionId]);
 		}
-		
-		var vertexX;
-		var vertexY;
-		var i;
-	
-		var lastIntersectionInSweep;
 		
 		// Reverse sweep (makes sure to get all the vertices adjacencies on the boundaries of the game board)
 		for (i= 6; i >= 0; i--)
 		{
-			vertexX = app.Utility.GetXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[0];
-			vertexY = app.Utility.GetXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12))[1];
+			xyPair = app.Utility.GetXYatArcEnd(centerX, centerY, hexRadius, (-1*i*2*Math.PI/6) - (-1*2*Math.PI/12));
+			vertexX = xyPair[0];
+			vertexY = xyPair[1];
 			
 			lastIntersectionInSweep = updateTheAdjacencies(idOfCurrentHex, vertexX, vertexY, lastIntersectionInSweep);
 		}
