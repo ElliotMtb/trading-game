@@ -9,14 +9,6 @@ var app = (function() {
 			height: 700
 		});
 
-		app.newGuid = function(){
-			var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-				var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-				return v.toString(16);
-			});     
-			return guid;
-		};
-
 		function shuffleAndPrepHexes() {
 
 			var numRegularHexes = app.RegularHexPieces.length;
@@ -54,8 +46,6 @@ var app = (function() {
 			return piece;
 		};
 
-		app.config = {};
-
 		app.NextNumPieceOrdered = function() {
 			
 			app.NumPieces = app.NumPieces.sort(function(a,b){return a.order>b.order});
@@ -87,6 +77,7 @@ var app = (function() {
 				app.SetNumPiecePullOrder(app.NextNumPieceRandom);
 			}
 		}
+
 		app.SetNumPiecePullOrder = function(method) {
 			
 			app.nextNumPiece = method;
@@ -130,14 +121,12 @@ var app = (function() {
 		SetupView.initView();
 		PlayerView.initView();
 		Router.init();
-		CatanHexView.initView();
-		CatanHexModel.initModel();
-		
-		//--------------
-		// Initializers
-		//--------------   
 
-		// instance of the Collection
+		app.HexIntersectionsList = Backbone.Collection.extend({
+			model: app.IntersectionModel,
+			localStorage: new Store("hex-intersection")
+		});
+		
 		app.PlayerList = Backbone.Collection.extend({
 			model: app.Player,
 			localStorage: new Store("settlers-of-catan"),
@@ -157,16 +146,6 @@ var app = (function() {
 					return false;
 				});
 			}
-		});
-
-		
-		//--------------
-		// Collections
-		//--------------
-
-		app.HexIntersectionsList = Backbone.Collection.extend({
-			model: app.IntersectionModel,
-			localStorage: new Store("hex-intersection")
 		});
 
 		app.CurrentIntersectionId = 0;

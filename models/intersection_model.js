@@ -37,7 +37,7 @@ var IntersectionModel = (function() {
 					stringAdjacentIntersects+= (adjancentIntersections[i] + ",");
 				}
 				
-				alert("adjacent to hex #: " + stringListOfHexes + " adjacent to intersections: " + stringAdjacentIntersects);
+				//alert("adjacent to hex #: " + stringListOfHexes + " adjacent to intersections: " + stringAdjacentIntersects);
 				
 			}
 		});
