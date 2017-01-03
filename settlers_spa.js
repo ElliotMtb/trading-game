@@ -107,7 +107,7 @@ var app = (function() {
 		app.rounds = [];
 		app.turnPhases = ["preRollPhase", "rollPhase", "collectResources", "trade", "build"];
 
-		var linkedList = new app.DataStructures.DoublyLinkedList(["abra", "cadabra", "poof"]);
+		var linkedList = new app.CircularLinkedList.CircularLinkedList(["abra", "cadabra", "poof"]);
 
 		console.log("The link list looks like: " + linkedList.ToString());
 	}
