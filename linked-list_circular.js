@@ -14,7 +14,8 @@ app.CircularLinkedList = (function() {
 
             var newNode = {
                 data: items[i],
-                next: null
+                next: null,
+                prev: null
             };
 
             this.AddToEnd(newNode);
@@ -35,10 +36,14 @@ app.CircularLinkedList = (function() {
 
         if (node === null) {
 
+            toInsert.prev = toInsert;
             toInsert.next =  toInsert;
             this.lastNode = toInsert;
         }
         else {
+
+            node.next.prev = toInsert;
+            toInsert.prev = node;
 
             toInsert.next = node.next;
             node.next = toInsert;
@@ -52,6 +57,7 @@ app.CircularLinkedList = (function() {
 
     function CircularLinkedList_RemoveFirst() {
 
+        this.lastNode.next.next.prev = this.lastNode;
         this.lastNode.next = this.lastNode.next.next;
     }
 

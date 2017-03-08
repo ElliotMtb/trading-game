@@ -49,7 +49,7 @@ app.GamePlay = (function() {
 
         var player;
 
-        if (currentPlayer === this.playersList.Last()) {
+        if (this.hasLastPlayerBeenHit === false && currentPlayer === this.playersList.Last()) {
                 
             this.hasLastPlayerBeenHit = true;
 
@@ -69,7 +69,7 @@ app.GamePlay = (function() {
             }
             else {
             
-                player = currentPlayer.Prev();
+                player = currentPlayer.prev;
             }
         }
 
@@ -182,6 +182,9 @@ app.GamePlay = (function() {
 
         // Show current player control panel
             // If it's an AI player...then don't load control panel, but show indicator...perhaps show actions...etc.
+
+        // Reset turn phase to null, so to start from beginning again
+        this.currentTurnPhase = null;
 
         this.NextTurnPhase();
     }
