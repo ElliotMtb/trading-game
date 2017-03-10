@@ -7,7 +7,7 @@ app.ControlPanelController = (function() {
     function Controller_OnActivePlayerChange(player) {
 
         var playerLabel = $("<span>", {
-            style: "color:blue;",
+            style: "color:" + player.data.color + ";",
             html: "Active Player: " + player.data.name
         });
 

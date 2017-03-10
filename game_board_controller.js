@@ -10,7 +10,7 @@ app.GameBoardController = (function() {
 
 	function Controller() {}
 
-	function Controller_BindSelectionTogglers() {
+	function Controller_BindControlPanelButtons() {
 
 		var that = this;
 
@@ -28,6 +28,21 @@ app.GameBoardController = (function() {
 		
 			that.ToggleHexSelectMode();
 		});
+
+		$("#endTurn").on("click", function() {
+
+			app.gamePlayMachine.NextTurn();
+
+			app.controlPanelController.OnActivePlayerChange(app.gamePlayMachine.currentTurnPlayer);
+		});
+
+		$("#nextGamePhase").on("click", function() {
+
+			app.gamePlayMachine.NextGamePhase();
+
+			app.controlPanelController.OnActivePlayerChange(app.gamePlayMachine.currentTurnPlayer);
+		});
+		
 	}
 
 	function Controller_ToggleIntersectSelectMode() {
@@ -143,14 +158,20 @@ app.GameBoardController = (function() {
 		$("#gameBoardContainer").show();
 		$("#player-container").hide();
 
-		app.gamePlayMachine.Start();
-		
-		var curretPlayer = app.gamePlayMachine.currentTurnPlayer;
-		
-		app.controlPanelController.OnActivePlayerChange(curretPlayer);
+		// Don't allow game to be started more than once
+		if (app.gamePhaseStatus !== "GAME_STARTED") {
+			
+			app.gamePhaseStatus = "GAME_STARTED";
+
+			app.gamePlayMachine.Start();
+			
+			var curretPlayer = app.gamePlayMachine.currentTurnPlayer;
+			
+			app.controlPanelController.OnActivePlayerChange(curretPlayer);
+		}
 	}
 
-	Controller.prototype.BindSelectionTogglers		= Controller_BindSelectionTogglers;
+	Controller.prototype.BindControlPanelButtons		= Controller_BindControlPanelButtons;
 	Controller.prototype.ToggleIntersectSelectMode 	= Controller_ToggleIntersectSelectMode;
 	Controller.prototype.ToggleRoadSelectMode 		= Controller_ToggleRoadSelectMode;
 	Controller.prototype.ToggleHexSelectMode 		= Controller_ToggleHexSelectMode;

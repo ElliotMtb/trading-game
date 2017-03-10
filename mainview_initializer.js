@@ -42,7 +42,13 @@ var ViewInitializer = (function() {
 			startingUnits: startingUnits
 		};
 
-		var playersList = new app.CircularLinkedList.CircularLinkedList([player1, player2, player3]);
+		var player4 = {
+			name: "Wifey!",
+			color: "purple",
+			startingUnits: startingUnits
+		};
+
+		var playersList = new app.CircularLinkedList.CircularLinkedList([player1, player2, player3, player4]);
 
 		var gamePlayMachine = new app.GamePlay.GamePlayMachine(playersList);
 
