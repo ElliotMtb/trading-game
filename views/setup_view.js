@@ -54,8 +54,7 @@ var SetupView = (function() {
 						$("#player-container").show();
 						break;
 					case 'begin':
-						$("#gameBoardContainer").show();
-						$("#player-container").hide();
+						app.gameBoardController.OnStartGame();
 						break;
 					default:
 						$("#gameBoardContainer").hide();

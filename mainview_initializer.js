@@ -46,7 +46,7 @@ var ViewInitializer = (function() {
 
 		var gamePlayMachine = new app.GamePlay.GamePlayMachine(playersList);
 
-		gamePlayMachine.Start();
+		app.gamePlayMachine = gamePlayMachine;
 		
 		// Print out hex-types adjacent to each intersection (in a natural/logical order)
 		app.printManMappedLogicalOrderIntersectToHexTypes();

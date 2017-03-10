@@ -138,12 +138,26 @@ app.GameBoardController = (function() {
 		});
 	};
 
+	function Controller_OnStartGame() {
+
+		$("#gameBoardContainer").show();
+		$("#player-container").hide();
+
+		app.gamePlayMachine.Start();
+		
+		var curretPlayer = app.gamePlayMachine.currentTurnPlayer;
+		
+		app.controlPanelController.OnActivePlayerChange(curretPlayer);
+	}
+
 	Controller.prototype.BindSelectionTogglers		= Controller_BindSelectionTogglers;
 	Controller.prototype.ToggleIntersectSelectMode 	= Controller_ToggleIntersectSelectMode;
 	Controller.prototype.ToggleRoadSelectMode 		= Controller_ToggleRoadSelectMode;
 	Controller.prototype.ToggleHexSelectMode 		= Controller_ToggleHexSelectMode;
 	Controller.prototype.BindRoadCenterClick 		= Controller_BindRoadCenterClick;
 	Controller.prototype.BindIntersectClick			= Controller_BindIntersectClick;
+
+	Controller.prototype.OnStartGame				= Controller_OnStartGame;
 
 	function toggleVisibilityForArray(items) {
 					
