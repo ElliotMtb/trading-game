@@ -68,31 +68,31 @@ describe("GamePlayMachine", function() {
 		var player1 = {
 			name: "Jon",
 			color: "red",
-			startingUnits: startingUnits
+            purchasedItems: {"road": 2, "settlement": 2, "city": 0, }
 		};
 
 		var player2 = {
 			name: "Elliot",
 			color: "blue",
-			startingUnits: startingUnits
+            purchasedItems: {"road": 2, "settlement": 2, "city": 0, "developmentCard": 0}
 		};
 
 		var player3 = {
 			name: "AI_1",
 			color: "green",
-			startingUnits: startingUnits
+            purchasedItems: {"road": 2, "settlement": 2, "city": 0, "developmentCard": 0}
 		};
 
         var player4 = {
 			name: "AI_2",
 			color: "brown",
-			startingUnits: startingUnits
+            purchasedItems: {"road": 2, "settlement": 2, "city": 0, "developmentCard": 0}
 		};
 
         var player5 = {
 			name: "AI_3",
 			color: "orange",
-			startingUnits: startingUnits
+            purchasedItems: {"road": 2, "settlement": 2, "city": 0, "developmentCard": 0}
 		};
 
         return new app.CircularLinkedList.CircularLinkedList([player1, player2, player3, player4, player5]);

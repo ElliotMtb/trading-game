@@ -105,11 +105,11 @@ var app = (function() {
 		app.gamePhases = [];
 		app.turns = [];
 		app.rounds = [];
-		app.turnPhases = ["preRollPhase", "rollPhase", "collectResources", "trade", "build"];
+		//app.turnPhases = ["preRollPhase", "rollPhase", "collectResources", "trade", "build"];
 
-		var linkedList = new app.CircularLinkedList.CircularLinkedList(["abra", "cadabra", "poof"]);
+		//var linkedList = new app.CircularLinkedList.CircularLinkedList(["abra", "cadabra", "poof"]);
 
-		console.log("The link list looks like: " + linkedList.ToString());
+		//console.log("The link list looks like: " + linkedList.ToString());
 	}
 
 	var initModule = function () {

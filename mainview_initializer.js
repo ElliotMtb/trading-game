@@ -17,43 +17,6 @@ var ViewInitializer = (function() {
 		app.Stage.add(kineticLayer);
 		kineticLayer.draw();
 
-		var startingUnits = [
-			"road",
-			"road",
-			"settlement",
-			"settlement"
-		];
-
-		var player1 = {
-			name: "Jon",
-			color: "red",
-			startingUnits: startingUnits
-		};
-
-		var player2 = {
-			name: "Elliot",
-			color: "blue",
-			startingUnits: startingUnits
-		};
-
-		var player3 = {
-			name: "AI1",
-			color: "green",
-			startingUnits: startingUnits
-		};
-
-		var player4 = {
-			name: "Wifey!",
-			color: "purple",
-			startingUnits: startingUnits
-		};
-
-		var playersList = new app.CircularLinkedList.CircularLinkedList([player1, player2, player3, player4]);
-
-		var gamePlayMachine = new app.GamePlay.GamePlayMachine(playersList);
-
-		app.gamePlayMachine = gamePlayMachine;
-		
 		// Print out hex-types adjacent to each intersection (in a natural/logical order)
 		app.printManMappedLogicalOrderIntersectToHexTypes();
 	};

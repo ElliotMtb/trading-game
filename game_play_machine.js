@@ -128,7 +128,7 @@ app.GamePlay = (function() {
             this.currentGamePhase = this.currentGamePhase.next;
         }
         else {
-            throw new "No more Game Phases!";
+            throw "No more Game Phases!";
         }
 
         var i;
@@ -157,7 +157,7 @@ app.GamePlay = (function() {
         }
         else {
             
-            throw new "No more Turn Phases!";
+            throw "No more Turn Phases!";
         }
 
         var i;

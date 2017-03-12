@@ -20,6 +20,21 @@ var SetupView = (function() {
 			ViewInitializer.init(kineticLayer, practiceHex);
 		};
 		
+		var getNewGameMachine = function() {
+
+			var playersList = app.playerList.models;
+
+			if (playersList.length < 2)
+				throw "Two or more players required to start a game.";
+
+			var playersList = new app.CircularLinkedList.CircularLinkedList(app.playerList.models);
+			
+			var gamePlayMachine = new app.GamePlay.GamePlayMachine(playersList);	
+
+			app.gamePlayMachine = gamePlayMachine;
+		
+		};
+
 		// renders list of intersections
 		app.SetupView = Backbone.View.extend({
 			el: '#settlersapp',
@@ -54,6 +69,7 @@ var SetupView = (function() {
 						$("#player-container").show();
 						break;
 					case 'begin':
+						getNewGameMachine();
 						app.gameBoardController.OnStartGame();
 						break;
 					default:

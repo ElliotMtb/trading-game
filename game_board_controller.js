@@ -33,14 +33,18 @@ app.GameBoardController = (function() {
 
 			app.gamePlayMachine.NextTurn();
 
-			app.controlPanelController.OnActivePlayerChange(app.gamePlayMachine.currentTurnPlayer);
+			var playerProxy = getPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
+
+			app.controlPanelController.OnActivePlayerChange(playerProxy);
 		});
 
 		$("#nextGamePhase").on("click", function() {
 
 			app.gamePlayMachine.NextGamePhase();
 
-			app.controlPanelController.OnActivePlayerChange(app.gamePlayMachine.currentTurnPlayer);
+			var playerProxy = getPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
+			
+			app.controlPanelController.OnActivePlayerChange(playerProxy);
 		});
 		
 	}
@@ -165,9 +169,9 @@ app.GameBoardController = (function() {
 
 			app.gamePlayMachine.Start();
 			
-			var curretPlayer = app.gamePlayMachine.currentTurnPlayer;
-			
-			app.controlPanelController.OnActivePlayerChange(curretPlayer);
+			var playerProxy = getPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
+
+			app.controlPanelController.OnActivePlayerChange(playerProxy);
 		}
 	}
 
@@ -179,6 +183,22 @@ app.GameBoardController = (function() {
 	Controller.prototype.BindIntersectClick			= Controller_BindIntersectClick;
 
 	Controller.prototype.OnStartGame				= Controller_OnStartGame;
+
+	/*
+		Currently using Backbone Models, but I imagine I'll want to factor out backbone in the
+		future in favor of moving towards Angular (most likely). As such, I want to decouple
+		from the actual Backbone model where possible
+	*/
+	function getPlayerProxy(player) {
+
+		return {
+			name: player.data.get("name"),
+			color: player.data.get("color"),
+			points: player.data.get("point"),
+			purchasedItems: player.data.get("purchasedItems"),
+			resources: player.data.get("resources")
+		};
+	}
 
 	function toggleVisibilityForArray(items) {
 					
