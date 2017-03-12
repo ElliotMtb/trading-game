@@ -106,6 +106,15 @@ app.GamePlay = (function() {
         this.currentTurnPlayer = null;
     }
 
+    /*
+        Return the player proxy so as to support storage/binding of players in different ways
+        e.g. because the internal model might look differenet if I stop using Backbone
+    */
+    function GamePlayMachine_GetCurrentPlayer() {
+
+        return app.GameBoardController.GetPlayerProxy(this.currentTurnPlayer);
+    }
+
     function GamePlayMachine_Start() {
         
         // Validate that everything is ready
@@ -193,6 +202,7 @@ app.GamePlay = (function() {
     GamePlayMachine.prototype.NextTurnPhase = GamePlayMachine_NextTurnPhase;
     GamePlayMachine.prototype.NextTurn = GamePlayMachine_NextTurn;
     GamePlayMachine.prototype.NextGamePhase = GamePlayMachine_NextGamePhase;
+    GamePlayMachine.prototype.GetCurrentPlayer = GamePlayMachine_GetCurrentPlayer;
 
     return {
         GamePlayMachine : GamePlayMachine

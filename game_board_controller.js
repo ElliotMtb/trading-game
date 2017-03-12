@@ -33,7 +33,7 @@ app.GameBoardController = (function() {
 
 			app.gamePlayMachine.NextTurn();
 
-			var playerProxy = getPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
+			var playerProxy = GetPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
 
 			app.controlPanelController.OnActivePlayerChange(playerProxy);
 		});
@@ -42,7 +42,7 @@ app.GameBoardController = (function() {
 
 			app.gamePlayMachine.NextGamePhase();
 
-			var playerProxy = getPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
+			var playerProxy = GetPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
 			
 			app.controlPanelController.OnActivePlayerChange(playerProxy);
 		});
@@ -110,8 +110,10 @@ app.GameBoardController = (function() {
 		
 		app.roadCenterPoints[roadCenterId].on('click', function(e){
 			
+			var currentPlayer = app.gamePlayMachine.GetCurrentPlayer();
+
 			// TODO: Use "global" road length
-			var road = piecesBuilder.MakeRoad(this.attrs.roadX, this.attrs.roadY, 20, "blue", this.attrs.angle);
+			var road = piecesBuilder.MakeRoad(this.attrs.roadX, this.attrs.roadY, 20, currentPlayer["color"], this.attrs.angle);
 			
 			app.kineticLayer.add(road);
 			app.kineticLayer.draw();
@@ -133,8 +135,12 @@ app.GameBoardController = (function() {
 				"text": "Settlement"
 			});
 			
+			var playerProxy = app.GameBoardController.GetPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
+
+			var itemDrawColor = playerProxy["color"];
+
 			settlement.on("click", function() {
-				piecesBuilder.MakeSettlement(intersectX, intersectY, 10, 'red', app.kineticLayer);
+				piecesBuilder.MakeSettlement(intersectX, intersectY, 10, itemDrawColor, app.kineticLayer);
 				app.kineticLayer.draw();
 			});
 			
@@ -144,7 +150,7 @@ app.GameBoardController = (function() {
 			});
 			
 			city.on("click", function() {
-				piecesBuilder.MakeCity(intersectX, intersectY, 10, 'red', app.kineticLayer);
+				piecesBuilder.MakeCity(intersectX, intersectY, 10, itemDrawColor, app.kineticLayer);
 				app.kineticLayer.draw();
 			});
 			
@@ -169,7 +175,7 @@ app.GameBoardController = (function() {
 
 			app.gamePlayMachine.Start();
 			
-			var playerProxy = getPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
+			var playerProxy = GetPlayerProxy(app.gamePlayMachine.currentTurnPlayer);
 
 			app.controlPanelController.OnActivePlayerChange(playerProxy);
 		}
@@ -185,11 +191,14 @@ app.GameBoardController = (function() {
 	Controller.prototype.OnStartGame				= Controller_OnStartGame;
 
 	/*
+		Public Static-esque function (i.e. not on the main "Controller" object in this module,
+		but in the list of "publically" returned/exposed functions)
+
 		Currently using Backbone Models, but I imagine I'll want to factor out backbone in the
 		future in favor of moving towards Angular (most likely). As such, I want to decouple
 		from the actual Backbone model where possible
 	*/
-	function getPlayerProxy(player) {
+	function GetPlayerProxy(player) {
 
 		return {
 			name: player.data.get("name"),
@@ -349,7 +358,8 @@ app.GameBoardController = (function() {
 	};
 
 	return {
-		Controller : Controller
+		Controller : Controller,
+		GetPlayerProxy: GetPlayerProxy
 	};
 
 })();

@@ -2,7 +2,6 @@ var app = app || {};
 
 describe("GamePlayMachine", function() {
 
-
     var gameMachine;
 
     beforeEach(function() {
