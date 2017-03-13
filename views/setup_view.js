@@ -65,6 +65,7 @@ var SetupView = (function() {
 
 					case 'playersWith2Points':
 						_.each(app.playerList.playersWith2Points(), this.addOne);
+						$("#dice-pan").hide();
 						$("#gameBoardContainer").hide();
 						$("#player-container").show();
 						break;
@@ -73,6 +74,7 @@ var SetupView = (function() {
 						app.gameBoardController.OnStartGame();
 						break;
 					default:
+						$("#dice-pan").hide();
 						$("#gameBoardContainer").hide();
 						$("#player-container").show();
 						app.playerList.each(this.addOne, this);

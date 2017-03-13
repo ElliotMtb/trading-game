@@ -165,6 +165,7 @@ app.GameBoardController = (function() {
 
 	function Controller_OnStartGame() {
 
+		$("#dice-pan").show();
 		$("#gameBoardContainer").show();
 		$("#player-container").hide();
 
