@@ -1,4 +1,6 @@
-var SetupView = (function() {
+var app = app || {};
+
+app.SetupViewInitializer = (function() {
 
 	var initView = function() {
 		

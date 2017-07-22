@@ -1,4 +1,6 @@
-var Router = (function() {
+var app = app || {};
+
+app.RouterInitializer = (function() {
 
 	var init = function() {
 	

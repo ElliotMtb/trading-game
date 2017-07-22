@@ -1,5 +1,6 @@
+var app = app || {};
 
-var PlayerView = (function() {
+app.PlayerViewInitializer = (function() {
 
 	var initView = function() {
 		

@@ -116,37 +116,13 @@ var app = (function() {
 		
 		initGameVars();
 
-		IntersectionView.initView();
-		IntersectionModel.initModel();
-		SetupView.initView();
-		PlayerView.initView();
-		Router.init();
-
-		app.HexIntersectionsList = Backbone.Collection.extend({
-			model: app.IntersectionModel,
-			localStorage: new Store("hex-intersection")
-		});
-		
-		app.PlayerList = Backbone.Collection.extend({
-			model: app.Player,
-			localStorage: new Store("settlers-of-catan"),
-			playersWith2Points: function(){
-				return this.filter(function(player) {
-
-					var playerName = player.get('name');
-				
-					if (player.get('point') == 2)
-					{	
-						console.log(playerName + ' has EXACTLY 2 points');
-						return true;
-					}
-
-					console.log(playerName + ' has more than 2 points');
-
-					return false;
-				});
-			}
-		});
+		// Setup the Backbone components (I particularly delayed the creation
+		// of the Backbone views because there seemed to be a timing issue
+		// with underscore being ready for use in setting up templates)
+		app.IntersectionViewInitializer.initView();
+		app.SetupViewInitializer.initView();
+		app.PlayerViewInitializer.initView();
+		app.RouterInitializer.init();
 
 		app.CurrentIntersectionId = 0;
 

@@ -1,4 +1,6 @@
-var IntersectionView = (function() {
+var app = app || {};
+
+app.IntersectionViewInitializer = (function() {
 	
 	var initView = function () {
 		
@@ -23,6 +25,6 @@ var IntersectionView = (function() {
 
 	};
 	
-	return {initView: initView };
+	return { initView: initView };
 	
 }());
