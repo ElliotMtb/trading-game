@@ -36,7 +36,22 @@ app.BoardBuilder = (function () {
         {
             kineticLayer.add(app.roadCenterPoints[c]);
         }
-    }
+	}
+	
+	var nextHexPiece = function() {
+
+		// TODO: factor out global app variable
+		var piece = app.HexPieces.splice(0,1)[0];
+
+			// This is useful, because if there are no more pieces prepared in the stack, it
+			// will just return ocean pieces ...to finish out the drawing algorithm
+			if (piece === undefined) {
+
+				return new app.oceanPiece();
+			}
+
+			return piece;
+	}
 
     var placeNextHex = function(hexId, radiusToRing, angle, kineticLayer) {
 
@@ -45,10 +60,10 @@ app.BoardBuilder = (function () {
 		var arcEndX = arcEndXYPair[0];
 		var arcEndY = arcEndXYPair[1];
 
-		var hexBuilder = new app.HexBuilder.HexBuilder();
+		var piecesPuller = new app.NumPiecePuller.PiecesPuller(app.NumPieces, 'ordered');
+		var hexBuilder = new app.HexBuilder.HexBuilder(piecesPuller);
 
-		// TODO: factor-out/paramaterize global call
-		var hexInfo = app.nextHexPiece();
+		var hexInfo = nextHexPiece();
 		
 		if (hexInfo === null)
 			throw "Ran out of hexes";

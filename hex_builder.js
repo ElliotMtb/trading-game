@@ -2,7 +2,10 @@ var app = app || {};
 
 app.HexBuilder = (function() {
 
-    function HexBuilder() {}
+    function HexBuilder(piecesPuller){
+
+		this.piecesPuller = piecesPuller;
+	}
 
     function HexBuilder_BuildHex(hexId, hexInfo, arcEndX, arcEndY, kineticLayer) {
 
@@ -15,7 +18,7 @@ app.HexBuilder = (function() {
 		}
 		else
 		{
-			numPiece = app.nextNumPiece();
+			numPiece = this.piecesPuller.NextNumPiece();
 			createTheHex();
 			createTheNumber();
 		}
